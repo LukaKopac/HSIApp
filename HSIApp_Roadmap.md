@@ -2,7 +2,7 @@
 
 **Project:** HSI Desktop Analysis Platform
 
-**Author:** Luka
+**Author:** Luka Kopač
 
 **Status:** In Development
 
