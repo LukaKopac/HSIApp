@@ -1,0 +1,74 @@
+﻿<Window x:Class="HSIApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:HSIApp.Controls"
+        Title="HSI Viewer"
+        Height="600"
+        Width="1000">
+
+    <DockPanel>
+
+        <!-- ================= Toolbar ================= -->
+
+        <ToolBar DockPanel.Dock="Top">
+            <Button Content="Open Cube"
+                    Click="OpenCube_Click"/>
+            <Separator/>
+            <Button Content="Save"/>
+        </ToolBar>
+
+        <!-- ================= Main Content ================= -->
+
+        <TabControl>
+
+            <!-- ===================================================== -->
+            <!-- BASE TAB -->
+            <!-- ===================================================== -->
+
+            <TabItem Header="Base">
+
+                <controls:ImageViewer x:Name="Viewer"/>
+
+            </TabItem>
+
+            <!-- ===================================================== -->
+            <!-- MASK TAB -->
+            <!-- ===================================================== -->
+
+            <TabItem Header="Mask">
+
+                <Grid Margin="10">
+
+                    <TextBlock
+                        FontSize="18"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Masking tools go here"/>
+
+                </Grid>
+
+            </TabItem>
+
+            <!-- ===================================================== -->
+            <!-- PREDICT TAB -->
+            <!-- ===================================================== -->
+
+            <TabItem Header="Predict">
+
+                <Grid Margin="10">
+
+                    <TextBlock
+                        FontSize="18"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Text="Prediction tools go here"/>
+
+                </Grid>
+
+            </TabItem>
+
+        </TabControl>
+
+    </DockPanel>
+
+</Window>

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HSIApp/HSIApp.csproj" />
+  <Project Path="HSIPlayground/HSIPlayground.csproj" />
+</Solution>
