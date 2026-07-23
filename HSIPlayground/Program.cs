@@ -1,4 +1,7 @@
-﻿using HSIApp;
+// Development playground for testing HSI functionality.
+// This project is not part of the main application.
+
+using HSIApp;
 using static System.Net.Mime.MediaTypeNames;
 
 string path = @"D:\PERSONAL\Coding\HSI\Wood species\RawData_eks9_ex-t\SWIR+\scene01\scene01_refl.raw";
