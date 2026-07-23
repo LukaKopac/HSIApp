@@ -21,13 +21,13 @@ Planned features:
 
 - Loading hyperspectral cubes (`.raw` + `.hdr`)
 - Interactive band visualization
-- RGB composite generation
 - Spectral profile visualization
-- Image navigation and inspection
+- Masking capabilities
 - Integration with machine learning models
 - Connection with Python-based hyperspectral processing workflows
 
 ## Project Structure
+```
 HSIApp/  
 │  
 ├── HSIApp/ # Main WPF application  
@@ -42,3 +42,4 @@ HSIApp/
 ├── HSIApp.slnx # Visual Studio solution  
 ├── HSIApp_Roadmap # Project roadmap  
 └── README.md  
+```
