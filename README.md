@@ -43,3 +43,7 @@ HSIApp/
 ├── HSIApp_Roadmap # Project roadmap  
 └── README.md  
 ```
+
+## Development Notes
+
+The HSIPlayground project contains experimental code used during development and may not always represent the current application state.
