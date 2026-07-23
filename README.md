@@ -28,16 +28,17 @@ Planned features:
 - Connection with Python-based hyperspectral processing workflows
 
 ## Project Structure
-HSIApp/
-│
-├── HSIApp/ # Main WPF application
-│ ├── Controls/ # Reusable UI components
-│ ├── IO/ # File loading and data handling
-│ ├── Models/ # Data structures (e.g. HSI cube, metadata)
-│ ├── Rendering/ # Visualization-related functionality
-│ └── ...
-│
-├── HSIPlayground/ # Console project for testing and development
-│
-├── HSIApp.slnx # Visual Studio solution
-└── README.md
+HSIApp/  
+│  
+├── HSIApp/ # Main WPF application  
+│ ├── Controls/ # Reusable UI components  
+│ ├── IO/ # File loading and data handling  
+│ ├── Models/ # Data structures (e.g. HSI cube, metadata)  
+│ ├── Rendering/ # Visualization-related functionality  
+│ └── ...  
+│  
+├── HSIPlayground/ # Console project for testing and development  
+│  
+├── HSIApp.slnx # Visual Studio solution  
+├── HSIApp_Roadmap # Project roadmap  
+└── README.md  
