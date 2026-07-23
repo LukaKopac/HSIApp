@@ -4,7 +4,7 @@
 using HSIApp;
 using static System.Net.Mime.MediaTypeNames;
 
-string path = @"D:\PERSONAL\Coding\HSI\Wood species\RawData_eks9_ex-t\SWIR+\scene01\scene01_refl.raw";
+string path = @"C:\Path\To\TestData\sample.raw";
 
 HsiMetadata header = HsiLoader.ReadHeader(path);
 
