@@ -2,9 +2,9 @@
 
 public class HsiCube
 {
-    public float[,,] Data { get; set; }
+    public float[,,] Data { get; set; } = null!;
 
-    public HsiMetadata Metadata { get; set; }
+    public HsiMetadata Metadata { get; set; } = null!;
 
     public int Height => Data.GetLength(0);
 

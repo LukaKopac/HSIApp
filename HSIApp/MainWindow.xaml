@@ -3,71 +3,128 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:HSIApp.Controls"
         Title="HSI Viewer"
-        Height="600"
-        Width="1000">
+        Height="700"
+        Width="1200">
 
     <DockPanel>
 
-        <!-- ================= Toolbar ================= -->
+        <!-- Top menu -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open Cube"
+                          Click="OpenCube_Click"/>
+                
+                <MenuItem Header="_Open Project"/>
+                <Separator/>
+                <MenuItem Header="_Exit"/>
+            </MenuItem>
 
-        <ToolBar DockPanel.Dock="Top">
-            <Button Content="Open Cube"
-                    Click="OpenCube_Click"/>
-            <Separator/>
-            <Button Content="Save"/>
-        </ToolBar>
+            <MenuItem Header="_Edit"/>
 
-        <!-- ================= Main Content ================= -->
+            <MenuItem Header="_View"/>
+        </Menu>
 
-        <TabControl>
 
-            <!-- ===================================================== -->
-            <!-- BASE TAB -->
-            <!-- ===================================================== -->
+        <!-- Main application area -->
+        <Grid>
 
-            <TabItem Header="Base">
+            <Grid.ColumnDefinitions>
+                <!-- Project panel -->
+                <ColumnDefinition Width="220"/>
 
-                <controls:ImageViewer x:Name="Viewer"/>
+                <!-- Workspace -->
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            </TabItem>
 
-            <!-- ===================================================== -->
-            <!-- MASK TAB -->
-            <!-- ===================================================== -->
+            <!-- LEFT: Project panel -->
+            <Border Grid.Column="0"
+                    BorderBrush="Gray"
+                    BorderThickness="0,0,1,0">
 
-            <TabItem Header="Mask">
+                <StackPanel>
 
-                <Grid Margin="10">
+                    <TextBlock Text="PROJECT"
+                               FontWeight="Bold"
+                               Margin="10"/>
 
-                    <TextBlock
-                        FontSize="18"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="Masking tools go here"/>
+                    <TextBlock Text="Status"
+                               Margin="10,5,10,2"/>
+
+                    <TextBlock Text="No cube loaded"
+                               Margin="10,0,10,10"/>
+
+                    <TextBlock Text="CUBES"
+                               FontWeight="Bold"
+                               Margin="10,15,10,5"/>
+
+                    <ListBox Margin="10"/>
+
+                    <TextBlock Text="MODELS"
+                               FontWeight="Bold"
+                               Margin="10,15,10,5"/>
+
+                    <ListBox Margin="10"/>
+
+                    <TextBlock Text="WORKFLOW"
+                               FontWeight="Bold"
+                               Margin="10,15,10,5"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- RIGHT: Workspace -->
+            <Grid Grid.Column="1"
+                  Margin="5">
+
+                <Grid.ColumnDefinitions>
+                    <!-- Image viewer -->
+                    <ColumnDefinition Width="3*"/>
+
+                    <!-- Spectra + stats -->
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+
+                <!-- IMAGE VIEWER -->
+                <controls:ImageViewer x:Name="Viewer" 
+                                      Grid.Column="0"/>
+
+
+                <!-- RIGHT SIDE -->
+                <Grid Grid.Column="1"
+                      Margin="5,0,0,0">
+
+                    <Grid.RowDefinitions>
+                        <!-- Spectrum -->
+                        <RowDefinition Height="2*"/>
+
+                        <!-- Statistics -->
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <controls:SpectrumViewer x:Name="Spectrum"
+                                             Grid.Row="0"/>
+
+                    <!-- Statistics -->
+                    <Border Grid.Row="1"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            Margin="0,5,0,0">
+
+                        <TextBlock Text="Image Statistics"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                    </Border>
 
                 </Grid>
 
-            </TabItem>
+            </Grid>
 
-            <!-- ===================================================== -->
-            <!-- PREDICT TAB -->
-            <!-- ===================================================== -->
-
-            <TabItem Header="Predict">
-
-                <Grid Margin="10">
-
-                    <TextBlock
-                        FontSize="18"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Text="Prediction tools go here"/>
-
-                </Grid>
-
-            </TabItem>
-
-        </TabControl>
+        </Grid>
 
     </DockPanel>
 

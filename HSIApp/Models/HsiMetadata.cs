@@ -8,11 +8,11 @@ public class HsiMetadata
 
     public int Bands { get; init; }
 
-    public string Interleave { get; init; }
+    public string Interleave { get; init; } = null!;
 
     public int DataType { get; init; }
 
-    public double[] Wavelengths { get; init; }
+    public double[] Wavelengths { get; init; } = null!;
 
     public Dictionary<string, string> Extra { get; init; } = new();
 

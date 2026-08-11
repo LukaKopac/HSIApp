@@ -3,15 +3,15 @@ using System.Windows;
 
 namespace HSIApp
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+
+        private HsiCube? currentCube;
 
         public MainWindow()
         {
             InitializeComponent();
+            Viewer.PixelHovered += Viewer_PixelHovered;
         }
 
         private void OpenCube_Click(object sender, RoutedEventArgs e)
@@ -26,9 +26,9 @@ namespace HSIApp
 
             try
             {
-                HsiCube cube = HsiLoader.Load(dialog.FileName);
+                currentCube = HsiLoader.Load(dialog.FileName);
 
-                Viewer.LoadCube(cube);
+                Viewer.LoadCube(currentCube);
             }
             catch (Exception ex)
             {
@@ -38,6 +38,18 @@ namespace HSIApp
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
+        }
+
+        private void Viewer_PixelHovered(int x, int y)
+        {
+            if (currentCube == null)
+                return;
+
+            float[] spectrum = currentCube.GetSpectrum(y, x);
+
+            Spectrum.DisplaySpectrum(
+                currentCube.Metadata.Wavelengths,
+                spectrum, x, y);
         }
     }
 }
