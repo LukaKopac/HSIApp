@@ -24,6 +24,13 @@
                 Orientation="Horizontal"
                 Margin="5">
 
+            <CheckBox x:Name="InteractiveCheckBox"
+                    Content="Interactive"
+                    IsChecked="True"
+                    Margin="0,0,15,0"
+                    Checked="InteractiveCheckBox_Checked"
+                    Unchecked="InteractiveCheckBox_Unchecked"/>
+            
             <TextBlock x:Name="PixelLabel"
                    Text="Pixel: X = -, Y = -"/>
 

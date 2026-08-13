@@ -1,5 +1,9 @@
 ﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.Windows;
+using HSIApp.Models;
+using System.Windows.Controls;
+using System.Drawing;
 
 namespace HSIApp
 {
@@ -7,11 +11,34 @@ namespace HSIApp
     {
 
         private HsiCube? currentCube;
+        private List<SpectrumSelection> selectedSpectra = new();
+        private int spectrumAveragingSize = 5;
+        private int nextSpectrumId = 1;
+
+        private readonly Color[] spectrumColors =
+        {
+            Color.Red,
+            Color.Blue,
+            Color.Green,
+            Color.Orange,
+            Color.Purple,
+            Color.Brown,
+            Color.Cyan,
+            Color.Magenta
+        };
 
         public MainWindow()
         {
             InitializeComponent();
+
             Viewer.PixelHovered += Viewer_PixelHovered;
+            Viewer.PixelClicked += Viewer_PixelClicked;
+
+            SpectrumManager.SpectrumSelectionChanged +=
+                SpectrumManager_SpectrumSelectionChanged;
+
+            SpectrumManager.SpectrumRemoved +=
+                SpectrumManager_SpectrumRemoved;
         }
 
         private void OpenCube_Click(object sender, RoutedEventArgs e)
@@ -45,11 +72,64 @@ namespace HSIApp
             if (currentCube == null)
                 return;
 
-            float[] spectrum = currentCube.GetSpectrum(y, x);
+            float[] spectrum = currentCube.GetAverageSpectrum(y, x, spectrumAveragingSize);
 
             Spectrum.DisplaySpectrum(
                 currentCube.Metadata.Wavelengths,
                 spectrum, x, y);
+        }
+
+        private void Viewer_PixelClicked(int x, int y)
+        {
+            if (currentCube == null)
+                return;
+
+            if (!Spectrum.IsInteractive)
+                return;
+
+            float[] spectrum = currentCube.GetAverageSpectrum(y, x, spectrumAveragingSize);
+
+            SpectrumSelection selection = new SpectrumSelection
+            {
+                Id = nextSpectrumId,
+                Name = $"Spectrum {nextSpectrumId}",
+                X = x,
+                Y = y,
+                Wavelengths = currentCube.Metadata.Wavelengths,
+                Spectrum = spectrum,
+                Color = spectrumColors[(nextSpectrumId - 1) % spectrumColors.Length]
+            };
+
+            nextSpectrumId++;
+
+            selectedSpectra.Add(selection);
+
+            SpectrumManager.AddSpectrum(selection);
+
+            Spectrum.AddSelectedSpectrum(selection);
+
+            Debug.WriteLine(
+                $"Added {selection.Name} at ({selection.X}, {selection.Y})");
+
+            Debug.WriteLine(
+                $"Total selected spectra: {selectedSpectra.Count}");
+        }
+
+        private void SpectrumManager_SpectrumSelectionChanged(
+            SpectrumSelection selection,
+            bool selected)
+        {
+            Spectrum.SetSpectrumSelected(
+                selection,
+                selected);
+        }
+
+        private void SpectrumManager_SpectrumRemoved(
+            SpectrumSelection selection)
+        {
+            Spectrum.RemoveSelectedSpectrum(selection);
+
+            selectedSpectra.Remove(selection);
         }
     }
 }

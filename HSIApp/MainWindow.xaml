@@ -81,7 +81,7 @@
 
                 <Grid.ColumnDefinitions>
                     <!-- Image viewer -->
-                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
 
                     <!-- Spectra + stats -->
                     <ColumnDefinition Width="2*"/>
@@ -108,17 +108,9 @@
                     <controls:SpectrumViewer x:Name="Spectrum"
                                              Grid.Row="0"/>
 
-                    <!-- Statistics -->
-                    <Border Grid.Row="1"
-                            BorderBrush="Gray"
-                            BorderThickness="1"
-                            Margin="0,5,0,0">
-
-                        <TextBlock Text="Image Statistics"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
-                    </Border>
+                    <controls:SpectrumManager x:Name="SpectrumManager"
+                                              Grid.Row="1"
+                                              Margin="0,5,0,0"/>
 
                 </Grid>
 

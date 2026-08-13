@@ -1,4 +1,6 @@
-﻿namespace HSIApp;
+﻿using System;
+
+namespace HSIApp;
 
 public class HsiCube
 {
@@ -25,6 +27,43 @@ public class HsiCube
         for (int b = 0; b < Bands; b++)
         {
             spectrum[b] = this[y, x, b];
+        }
+
+        return spectrum;
+    }
+
+    public float[] GetAverageSpectrum(int centerY, int centerX, int size)
+    {
+        if (size <= 0 || size % 2 == 0)
+            throw new ArgumentException("Size must be a positive odd number.");
+
+        int radius = size / 2;
+
+        int minY = Math.Max(0, centerY - radius);
+        int maxY = Math.Min(Height - 1, centerY + radius);
+
+        int minX = Math.Max(0, centerX - radius);
+        int maxX = Math.Min(Width - 1, centerX + radius);
+
+        float[] spectrum = new float[Bands];
+        int pixelCount = 0;
+
+        for (int y = minY; y <= maxY; y++)
+        {
+            for (int x = minX; x <= maxX; x++)
+            {
+                for (int b = 0; b < Bands; b++)
+                {
+                    spectrum[b] += Data[y, x, b];
+                }
+
+                pixelCount++;
+            }
+        }
+
+        for (int b = 0; b < Bands; b++)
+        {
+            spectrum[b] /= pixelCount;
         }
 
         return spectrum;

@@ -17,14 +17,24 @@
 
         <!-- Image -->
 
-        <Border Grid.Row="0"
+        <Border x:Name="ImageViewport"
+                Grid.Row="0"
                 Margin="5"
                 BorderBrush="Gray"
-                BorderThickness="1">
+                BorderThickness="1"
+                Background="Transparent"
+                ClipToBounds="True"
+                MouseMove="ImageViewport_MouseMove"
+                MouseLeftButtonDown="ImageViewport_MouseLeftButtonDown"
+                MouseWheel="ImageViewport_MouseWheel"
+                MouseDown="ImageViewport_MouseDown"
+                MouseUp="ImageViewport_MouseUp">
 
             <Image x:Name="BandImage"
                     Stretch="None"
-                    MouseMove="BandImage_MouseMove">
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    RenderTransformOrigin="0,0">
 
                 <Image.RenderTransform>
                     <TransformGroup>
