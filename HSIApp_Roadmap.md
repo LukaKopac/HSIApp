@@ -710,10 +710,6 @@ A completed simple feature is more valuable than five unfinished advanced ones.
 Current tasks:
 
 * [ ] Finish clean WPF layout
-* [ ] Open cube
-* [ ] Load metadata
-* [ ] Display first band
-* [ ] Band slider
 * [ ] Previous / Next buttons
 * [ ] Display wavelength
 * [ ] Display filename
