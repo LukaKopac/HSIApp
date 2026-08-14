@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using HSIApp.Models;
+using HSIApp.Controls;
 using System.Windows.Controls;
 using System.Drawing;
 

@@ -11,6 +11,9 @@ namespace HSIApp.Controls
     {
         private HsiCube? currentCube;
 
+        private ImageInteractionMode interactionMode =
+            ImageInteractionMode.Normal;
+
         // Zooming
         private double zoom = 1.0;
         private const double ZoomStep = 1.2;
@@ -36,6 +39,9 @@ namespace HSIApp.Controls
             MouseButtonEventArgs e)
         {
             if (currentCube == null)
+                return;
+
+            if (interactionMode != ImageInteractionMode.Selection)
                 return;
 
             Point viewportPosition = e.GetPosition(ImageViewport);
@@ -137,6 +143,9 @@ namespace HSIApp.Controls
                 return;
             }
 
+            if (interactionMode != ImageInteractionMode.Selection)
+                return;
+
             Point viewportPosition = e.GetPosition(ImageViewport);
 
             if (TryGetImagePixel(viewportPosition, out int x, out int y))
@@ -152,43 +161,88 @@ namespace HSIApp.Controls
 
             Point mousePosition = e.GetPosition(ImageViewport);
 
-            double oldZoom = zoom;
-
             if (e.Delta > 0)
             {
-                zoom *= ZoomStep;
+                ZoomAt(mousePosition, ZoomStep);
             }
             else
             {
-                zoom /= ZoomStep;
+                ZoomAt(mousePosition, 1.0 / ZoomStep);
             }
 
+            e.Handled = true;
+        }
+
+        private void ZoomAt(
+            Point viewportPosition,
+            double factor)
+        {
+            double oldZoom = zoom;
+
+            zoom *= factor;
             zoom = Math.Clamp(zoom, MinZoom, MaxZoom);
 
             if (Math.Abs(zoom - oldZoom) < 0.0001)
                 return;
 
-            // Position of the mouse relative to the image
-            double imageX = (mousePosition.X - ImageTranslation.X) / oldZoom;
-            double imageY = (mousePosition.Y - ImageTranslation.Y) / oldZoom;
+            double imageX =
+                (viewportPosition.X - ImageTranslation.X) / oldZoom;
 
-            // Update scale
+            double imageY =
+                (viewportPosition.Y - ImageTranslation.Y) / oldZoom;
+
             ImageScale.ScaleX = zoom;
             ImageScale.ScaleY = zoom;
 
-            // Keep the same image point underneath the mouse
-            ImageTranslation.X = mousePosition.X - imageX * zoom;
-            ImageTranslation.Y = mousePosition.Y - imageY * zoom;
+            ImageTranslation.X =
+                viewportPosition.X - imageX * zoom;
 
-            e.Handled = true;
+            ImageTranslation.Y =
+                viewportPosition.Y - imageY * zoom;
+        }
+
+        public void ZoomIn()
+        {
+            Point center = new Point(
+                ImageViewport.ActualWidth / 2,
+                ImageViewport.ActualHeight / 2);
+
+            ZoomAt(center, ZoomStep);
+        }
+
+        private void ZoomInButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            ZoomIn();
+        }
+
+        public void ZoomOut()
+        {
+            Point center = new Point(
+                ImageViewport.ActualWidth / 2,
+                ImageViewport.ActualHeight / 2);
+
+            ZoomAt(center, 1.0 / ZoomStep);
+        }
+
+        private void ZoomOutButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            ZoomOut();
         }
 
         private void ImageViewport_MouseDown(
             object sender,
             MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Middle)
+            if (e.ChangedButton != MouseButton.Middle &&
+                !(interactionMode == ImageInteractionMode.Pan &&
+                  e.ChangedButton == MouseButton.Left))
+            {
                 return;
+            }
 
             isPanning = true;
 
@@ -206,14 +260,117 @@ namespace HSIApp.Controls
             object sender,
             MouseButtonEventArgs e)
         {
-            if (e.ChangedButton != MouseButton.Middle)
+            if (e.ChangedButton != MouseButton.Middle &&
+                !(interactionMode == ImageInteractionMode.Pan &&
+                  e.ChangedButton == MouseButton.Left))
+            {
                 return;
+            }
 
             isPanning = false;
 
             ImageViewport.ReleaseMouseCapture();
 
             e.Handled = true;
+        }
+
+        public void SetInteractionMode(ImageInteractionMode mode)
+        {
+            interactionMode = mode;
+
+            PanButton.IsChecked =
+                mode == ImageInteractionMode.Pan;
+
+            if (mode == ImageInteractionMode.Selection)
+            {
+                SelectionModeComboBox.SelectedItem =
+                    SinglePixelSelectionItem;
+            }
+            else
+            {
+                SelectionModeComboBox.SelectedIndex = -1;
+            }
+
+            if (mode != ImageInteractionMode.Pan)
+            {
+                isPanning = false;
+                ImageViewport.ReleaseMouseCapture();
+            }
+        }
+
+        private void PanButton_Checked(
+            object sender,
+            RoutedEventArgs e)
+        {
+            SetInteractionMode(ImageInteractionMode.Pan);
+        }
+
+        private void PanButton_Unchecked(
+            object sender,
+            RoutedEventArgs e)
+        {
+            SetInteractionMode(ImageInteractionMode.Normal);
+        }
+
+        public void FitImage()
+        {
+            if (currentCube == null)
+                return;
+
+            double viewportWidth = ImageViewport.ActualWidth;
+            double viewportHeight = ImageViewport.ActualHeight;
+
+            if (viewportWidth <= 0 || viewportHeight <= 0)
+                return;
+
+            double imageWidth = currentCube.Width;
+            double imageHeight = currentCube.Height;
+
+            double scaleX = viewportWidth / imageWidth;
+            double scaleY = viewportHeight / imageHeight;
+
+            zoom = Math.Min(scaleX, scaleY);
+
+            // Fit is allowed to go below MinZoom.
+            zoom = Math.Min(zoom, MaxZoom);
+
+            ImageScale.ScaleX = zoom;
+            ImageScale.ScaleY = zoom;
+
+            double scaledWidth = imageWidth * zoom;
+            double scaledHeight = imageHeight * zoom;
+
+            ImageTranslation.X =
+                (viewportWidth - scaledWidth) / 2;
+
+            ImageTranslation.Y =
+                (viewportHeight - scaledHeight) / 2;
+        }
+
+        private void FitButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            FitImage();
+        }
+
+        private void SelectionModeComboBox_SelectionChanged(
+            object sender,
+            SelectionChangedEventArgs e)
+        {
+            if (SelectionModeComboBox.SelectedItem is not ComboBoxItem item)
+                return;
+
+            string? selectionMode = item.Content?.ToString();
+
+            if (selectionMode == "Single Pixel")
+            {
+                SetInteractionMode(ImageInteractionMode.Selection);
+            }
+            else if (selectionMode == "None")
+            {
+                SetInteractionMode(ImageInteractionMode.Normal);
+            }
         }
     }
 }

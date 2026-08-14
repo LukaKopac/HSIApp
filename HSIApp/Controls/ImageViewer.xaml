@@ -30,26 +30,89 @@
                 MouseDown="ImageViewport_MouseDown"
                 MouseUp="ImageViewport_MouseUp">
 
-            <Image x:Name="BandImage"
-                    Stretch="None"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    RenderTransformOrigin="0,0">
+            <Grid>
 
-                <Image.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform x:Name="ImageScale"
-                            ScaleX="1"
-                            ScaleY="1"/>
+                <!-- Image -->
+                <Canvas x:Name="ImageCanvas">
 
-                        <TranslateTransform x:Name="ImageTranslation"
-                                X="0"
-                                Y="0"/>
-                    </TransformGroup>
-                </Image.RenderTransform>
+                    <Image x:Name="BandImage"
+                           Stretch="None"
+                           RenderTransformOrigin="0,0">
 
-            </Image>
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="ImageScale"
+                                                ScaleX="1"
+                                                ScaleY="1"/>
 
+                                <TranslateTransform x:Name="ImageTranslation"
+                                                    X="0"
+                                                    Y="0"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+
+                    </Image>
+
+                </Canvas>
+
+                <!-- Viewer toolbar -->
+                <StackPanel HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Margin="5"
+                            Orientation="Vertical">
+
+                    <ComboBox x:Name="SelectionModeComboBox"
+                              Width="100"
+                              Height="35"
+                              IsEditable="True"
+                              IsReadOnly="True"
+                              Text="Selection"
+                              FontSize="16"
+                              FontWeight="Bold"
+                              SelectedIndex="-1"
+                              SelectionChanged="SelectionModeComboBox_SelectionChanged">
+
+                        <ComboBoxItem x:Name="NoneSelectionItem"
+                                      Content="None"/>
+                        
+                        <ComboBoxItem x:Name="SinglePixelSelectionItem"
+                                      Content="Single Pixel"/>
+
+                    </ComboBox>
+
+                    <!-- Zoom in -->
+                    <Button Content="+"
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Right"
+                            Click="ZoomInButton_Click"/>
+
+                    <!-- Zoom out -->
+                    <Button Content="−"
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Right"
+                            Click="ZoomOutButton_Click"/>
+
+                    <!-- Pan -->
+                    <ToggleButton x:Name="PanButton"
+                                  Content="P"
+                                  Width="30"
+                                  Height="30"
+                                  HorizontalAlignment="Right"
+                                  Checked="PanButton_Checked"
+                                  Unchecked="PanButton_Unchecked"/>
+
+                    <!-- Fit image -->
+                    <Button Content="F"
+                            Width="30"
+                            Height="30"
+                            HorizontalAlignment="Right"
+                            Click="FitButton_Click"/>
+
+                </StackPanel>
+
+            </Grid>
         </Border>
 
 
