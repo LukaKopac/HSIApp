@@ -62,21 +62,22 @@
                             Orientation="Vertical">
 
                     <ComboBox x:Name="SelectionModeComboBox"
-                              Width="100"
-                              Height="35"
+                              Width="40"
+                              Height="30"
                               IsEditable="True"
                               IsReadOnly="True"
-                              Text="Selection"
+                              Text="S"
                               FontSize="16"
                               FontWeight="Bold"
-                              SelectedIndex="-1"
+                              SelectedIndex="0"
                               SelectionChanged="SelectionModeComboBox_SelectionChanged">
 
-                        <ComboBoxItem x:Name="NoneSelectionItem"
-                                      Content="None"/>
-                        
-                        <ComboBoxItem x:Name="SinglePixelSelectionItem"
-                                      Content="Single Pixel"/>
+                        <ComboBoxItem x:Name="AreaAverageSelectionItem"
+                                      Content="Area Average"/>
+
+                        <ComboBoxItem Content="Rectangle"/>
+
+                        <ComboBoxItem Content="Multipoint"/>
 
                     </ComboBox>
 

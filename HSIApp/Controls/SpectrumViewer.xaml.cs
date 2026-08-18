@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
 using System.Collections.Generic;
+using System;
 
 namespace HSIApp.Controls
 {
@@ -11,6 +12,10 @@ namespace HSIApp.Controls
         private ScottPlot.Plottables.Scatter? cursorSpectrum;
         private Dictionary<SpectrumSelection, ScottPlot.Plottables.Scatter> selectedSpectra = new();
 
+        private bool updatingInteractive = false;
+
+        public event Action<bool>? InteractiveChanged;
+
         public SpectrumViewer()
         {
             InitializeComponent();
@@ -18,6 +23,15 @@ namespace HSIApp.Controls
 
         public bool IsInteractive =>
             InteractiveCheckBox.IsChecked == true;
+
+        public void SetInteractive(bool interactive)
+        {
+            updatingInteractive = true;
+
+            InteractiveCheckBox.IsChecked = interactive;
+
+            updatingInteractive = false;
+        }
 
         public void DisplaySpectrum(
             double[] wavelengths,
@@ -120,13 +134,19 @@ namespace HSIApp.Controls
             object sender,
             System.Windows.RoutedEventArgs e)
         {
-            // Nothing to do yet.
+            if (updatingInteractive)
+                return;
+
+            InteractiveChanged?.Invoke(true);
         }
 
         private void InteractiveCheckBox_Unchecked(
             object sender,
             System.Windows.RoutedEventArgs e)
         {
+            if (updatingInteractive)
+                return;
+
             if (cursorSpectrum != null)
             {
                 SpectrumPlot.Plot.Remove(cursorSpectrum);
@@ -136,6 +156,8 @@ namespace HSIApp.Controls
             PixelLabel.Text = "Pixel: X = -, Y = -";
 
             SpectrumPlot.Refresh();
+
+            InteractiveChanged?.Invoke(false);
         }
 
         public void RemoveSelectedSpectrum(SpectrumSelection selection)

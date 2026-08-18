@@ -16,6 +16,11 @@ namespace HSIApp
         private int spectrumAveragingSize = 5;
         private int nextSpectrumId = 1;
 
+        private bool interactiveBeforePan = false;
+
+        private ImageInteractionMode modeBeforePan =
+            ImageInteractionMode.Selection;
+
         private readonly Color[] spectrumColors =
         {
             Color.Red,
@@ -34,6 +39,11 @@ namespace HSIApp
 
             Viewer.PixelHovered += Viewer_PixelHovered;
             Viewer.PixelClicked += Viewer_PixelClicked;
+
+            Viewer.PanModeChanged += Viewer_PanModeChanged;
+
+            Spectrum.InteractiveChanged +=
+                Spectrum_InteractiveChanged;
 
             SpectrumManager.SpectrumSelectionChanged +=
                 SpectrumManager_SpectrumSelectionChanged;
@@ -131,6 +141,38 @@ namespace HSIApp
             Spectrum.RemoveSelectedSpectrum(selection);
 
             selectedSpectra.Remove(selection);
+        }
+
+        private void Spectrum_InteractiveChanged(bool interactive)
+        {
+            Viewer.SetInteractive(interactive);
+        }
+
+        private void Viewer_PanModeChanged(bool isPanMode)
+        {
+            if (isPanMode)
+            {
+                modeBeforePan =
+                    Spectrum.IsInteractive
+                        ? ImageInteractionMode.Selection
+                        : ImageInteractionMode.Normal;
+
+                if (Spectrum.IsInteractive)
+                {
+                    Spectrum.SetInteractive(false);
+                }
+            }
+            else
+            {
+                if (modeBeforePan == ImageInteractionMode.Selection)
+                {
+                    Spectrum.SetInteractive(true);
+                }
+                else
+                {
+                    Viewer.SetInteractionMode(ImageInteractionMode.Normal);
+                }
+            }
         }
     }
 }

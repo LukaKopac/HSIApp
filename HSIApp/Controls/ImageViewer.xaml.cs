@@ -12,7 +12,7 @@ namespace HSIApp.Controls
         private HsiCube? currentCube;
 
         private ImageInteractionMode interactionMode =
-            ImageInteractionMode.Normal;
+            ImageInteractionMode.Selection;
 
         // Zooming
         private double zoom = 1.0;
@@ -26,6 +26,8 @@ namespace HSIApp.Controls
         private double panStartX;
         private double panStartY;
 
+        private bool updatingInteractionMode = false;
+
         public ImageViewer()
         {
             InitializeComponent();
@@ -33,6 +35,7 @@ namespace HSIApp.Controls
 
         public event Action<int, int>? PixelHovered;
         public event Action<int, int>? PixelClicked;
+        public event Action<bool>? PanModeChanged;
 
         private void ImageViewport_MouseLeftButtonDown(
             object sender,
@@ -276,6 +279,11 @@ namespace HSIApp.Controls
 
         public void SetInteractionMode(ImageInteractionMode mode)
         {
+            if (updatingInteractionMode)
+                return;
+
+            updatingInteractionMode = true;
+
             interactionMode = mode;
 
             PanButton.IsChecked =
@@ -284,11 +292,7 @@ namespace HSIApp.Controls
             if (mode == ImageInteractionMode.Selection)
             {
                 SelectionModeComboBox.SelectedItem =
-                    SinglePixelSelectionItem;
-            }
-            else
-            {
-                SelectionModeComboBox.SelectedIndex = -1;
+                    AreaAverageSelectionItem;
             }
 
             if (mode != ImageInteractionMode.Pan)
@@ -296,12 +300,31 @@ namespace HSIApp.Controls
                 isPanning = false;
                 ImageViewport.ReleaseMouseCapture();
             }
+
+            updatingInteractionMode = false;
+        }
+
+        public void SetInteractive(bool interactive)
+        {
+            if (interactive)
+            {
+                SetInteractionMode(ImageInteractionMode.Selection);
+            }
+            else
+            {
+                SetInteractionMode(ImageInteractionMode.Normal);
+            }
         }
 
         private void PanButton_Checked(
             object sender,
             RoutedEventArgs e)
         {
+            if (updatingInteractionMode)
+                return;
+
+            PanModeChanged?.Invoke(true);
+
             SetInteractionMode(ImageInteractionMode.Pan);
         }
 
@@ -309,7 +332,12 @@ namespace HSIApp.Controls
             object sender,
             RoutedEventArgs e)
         {
-            SetInteractionMode(ImageInteractionMode.Normal);
+            if (updatingInteractionMode)
+                return;
+
+            PanModeChanged?.Invoke(false);
+
+            SetInteractionMode(ImageInteractionMode.Selection);
         }
 
         public void FitImage()
@@ -358,18 +386,17 @@ namespace HSIApp.Controls
             object sender,
             SelectionChangedEventArgs e)
         {
+            if (!IsInitialized)
+                return;
+
             if (SelectionModeComboBox.SelectedItem is not ComboBoxItem item)
                 return;
 
             string? selectionMode = item.Content?.ToString();
 
-            if (selectionMode == "Single Pixel")
+            if (selectionMode == "Area Average")
             {
                 SetInteractionMode(ImageInteractionMode.Selection);
-            }
-            else if (selectionMode == "None")
-            {
-                SetInteractionMode(ImageInteractionMode.Normal);
             }
         }
     }
