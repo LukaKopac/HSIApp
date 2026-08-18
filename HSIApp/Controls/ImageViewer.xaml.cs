@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace HSIApp.Controls
 {
@@ -26,6 +27,10 @@ namespace HSIApp.Controls
         private double panStartX;
         private double panStartY;
 
+        private bool isDrawingRectangle;
+        private int rectangleStartX;
+        private int rectangleStartY;
+
         private bool updatingInteractionMode = false;
 
         public ImageViewer()
@@ -36,6 +41,7 @@ namespace HSIApp.Controls
         public event Action<int, int>? PixelHovered;
         public event Action<int, int>? PixelClicked;
         public event Action<bool>? PanModeChanged;
+        public event Action<int, int, int, int>? RectangleSelected;
 
         private void ImageViewport_MouseLeftButtonDown(
             object sender,
@@ -43,6 +49,33 @@ namespace HSIApp.Controls
         {
             if (currentCube == null)
                 return;
+
+            if (interactionMode == ImageInteractionMode.RectangleSelection)
+            {
+                Point rectangleViewportPosition = e.GetPosition(ImageViewport);
+
+                if (!TryGetImagePixel(
+                        rectangleViewportPosition,
+                        out rectangleStartX,
+                        out rectangleStartY))
+                {
+                    return;
+                }
+
+                isDrawingRectangle = true;
+
+                Canvas.SetLeft(SelectionRectangle, rectangleStartX);
+                Canvas.SetTop(SelectionRectangle, rectangleStartY);
+
+                SelectionRectangle.Width = 1;
+                SelectionRectangle.Height = 1;
+                SelectionRectangle.Visibility = Visibility.Visible;
+
+                ImageViewport.CaptureMouse();
+
+                e.Handled = true;
+                return;
+            }
 
             if (interactionMode != ImageInteractionMode.Selection)
                 return;
@@ -132,6 +165,22 @@ namespace HSIApp.Controls
         {
             if (currentCube == null)
                 return;
+
+            if (isDrawingRectangle)
+            {
+                Point rectangleViewportPosition = e.GetPosition(ImageViewport);
+
+                if (TryGetClampedImagePixel(
+                        rectangleViewportPosition,
+                        out int currentX,
+                        out int currentY))
+                {
+                    UpdateSelectionRectangle(currentX, currentY);
+                }
+
+                e.Handled = true;
+                return;
+            }
 
             if (isPanning)
             {
@@ -263,6 +312,34 @@ namespace HSIApp.Controls
             object sender,
             MouseButtonEventArgs e)
         {
+            if (isDrawingRectangle &&
+                e.ChangedButton == MouseButton.Left)
+            {
+                Point rectangleViewportPosition = e.GetPosition(ImageViewport);
+
+                if (TryGetClampedImagePixel(
+                        rectangleViewportPosition,
+                        out int endX,
+                        out int endY))
+                {
+                    int left = Math.Min(rectangleStartX, endX);
+                    int top = Math.Min(rectangleStartY, endY);
+
+                    int width = Math.Abs(endX - rectangleStartX) + 1;
+                    int height = Math.Abs(endY - rectangleStartY) + 1;
+
+                    RectangleSelected?.Invoke(left, top, width, height);
+                }
+
+                isDrawingRectangle = false;
+                SelectionRectangle.Visibility = Visibility.Collapsed;
+
+                ImageViewport.ReleaseMouseCapture();
+
+                e.Handled = true;
+                return;
+            }
+
             if (e.ChangedButton != MouseButton.Middle &&
                 !(interactionMode == ImageInteractionMode.Pan &&
                   e.ChangedButton == MouseButton.Left))
@@ -398,6 +475,55 @@ namespace HSIApp.Controls
             {
                 SetInteractionMode(ImageInteractionMode.Selection);
             }
+            else if (selectionMode == "Rectangle")
+            {
+                SetInteractionMode(ImageInteractionMode.RectangleSelection);
+            }
+        }
+
+        private bool TryGetClampedImagePixel(
+            Point viewportPosition,
+            out int x,
+            out int y)
+        {
+            x = 0;
+            y = 0;
+
+            if (currentCube == null)
+                return false;
+
+            double imageX =
+                (viewportPosition.X - ImageTranslation.X) / ImageScale.ScaleX;
+
+            double imageY =
+                (viewportPosition.Y - ImageTranslation.Y) / ImageScale.ScaleY;
+
+            x = Math.Clamp(
+                (int)Math.Floor(imageX),
+                0,
+                currentCube.Width - 1);
+
+            y = Math.Clamp(
+                (int)Math.Floor(imageY),
+                0,
+                currentCube.Height - 1);
+
+            return true;
+        }
+
+        private void UpdateSelectionRectangle(int endX, int endY)
+        {
+            int left = Math.Min(rectangleStartX, endX);
+            int top = Math.Min(rectangleStartY, endY);
+
+            int width = Math.Abs(endX - rectangleStartX) + 1;
+            int height = Math.Abs(endY - rectangleStartY) + 1;
+
+            Canvas.SetLeft(SelectionRectangle, left);
+            Canvas.SetTop(SelectionRectangle, top);
+
+            SelectionRectangle.Width = width;
+            SelectionRectangle.Height = height;
         }
     }
 }

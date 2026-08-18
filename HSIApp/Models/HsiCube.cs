@@ -69,6 +69,43 @@ public class HsiCube
         return spectrum;
     }
 
+    public float[] GetAverageRectangleSpectrum(
+        int startX,
+        int startY,
+        int width,
+        int height)
+    {
+        if (startX < 0 || startY < 0 ||
+            width <= 0 || height <= 0 ||
+            startX + width > Width ||
+            startY + height > Height)
+        {
+            throw new ArgumentOutOfRangeException(
+                "The rectangle must be fully inside the cube.");
+        }
+
+        float[] spectrum = new float[Bands];
+        int pixelCount = width * height;
+
+        for (int y = startY; y < startY + height; y++)
+        {
+            for (int x = startX; x < startX + width; x++)
+            {
+                for (int band = 0; band < Bands; band++)
+                {
+                    spectrum[band] += Data[y, x, band];
+                }
+            }
+        }
+
+        for (int band = 0; band < Bands; band++)
+        {
+            spectrum[band] /= pixelCount;
+        }
+
+        return spectrum;
+    }
+
     public float[,] GetBand(int band)
     {
         float[,] image = new float[Height, Width];

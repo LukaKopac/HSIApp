@@ -33,26 +33,30 @@
             <Grid>
 
                 <!-- Image -->
-                <Canvas x:Name="ImageCanvas">
+                <Canvas x:Name="ImageCanvas"
+                        RenderTransformOrigin="0,0">
+
+                    <Canvas.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="ImageScale"
+                                            ScaleX="1"
+                                            ScaleY="1"/>
+
+                            <TranslateTransform x:Name="ImageTranslation"
+                                                X="0"
+                                                Y="0"/>
+                        </TransformGroup>
+                    </Canvas.RenderTransform>
 
                     <Image x:Name="BandImage"
-                           Stretch="None"
-                           RenderTransformOrigin="0,0">
+                            Stretch="None"/>
 
-                        <Image.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform x:Name="ImageScale"
-                                                ScaleX="1"
-                                                ScaleY="1"/>
-
-                                <TranslateTransform x:Name="ImageTranslation"
-                                                    X="0"
-                                                    Y="0"/>
-                            </TransformGroup>
-                        </Image.RenderTransform>
-
-                    </Image>
-
+                    <Rectangle x:Name="SelectionRectangle"
+                               Visibility="Collapsed"
+                               Fill="#3000AEEF"
+                               Stroke="DodgerBlue"
+                               StrokeThickness="1"
+                               IsHitTestVisible="False"/>
                 </Canvas>
 
                 <!-- Viewer toolbar -->

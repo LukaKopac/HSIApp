@@ -42,6 +42,8 @@ namespace HSIApp
 
             Viewer.PanModeChanged += Viewer_PanModeChanged;
 
+            Viewer.RectangleSelected += Viewer_RectangleSelected;
+
             Spectrum.InteractiveChanged +=
                 Spectrum_InteractiveChanged;
 
@@ -173,6 +175,43 @@ namespace HSIApp
                     Viewer.SetInteractionMode(ImageInteractionMode.Normal);
                 }
             }
+        }
+
+        private void Viewer_RectangleSelected(
+    int x,
+    int y,
+    int width,
+    int height)
+        {
+            if (currentCube == null)
+                return;
+
+            if (!Spectrum.IsInteractive)
+                return;
+
+            float[] spectrum = currentCube.GetAverageRectangleSpectrum(
+                x,
+                y,
+                width,
+                height);
+
+            SpectrumSelection selection = new SpectrumSelection
+            {
+                Id = nextSpectrumId,
+                Name = $"Rectangle {nextSpectrumId} ({width} × {height})",
+                X = x,
+                Y = y,
+                Wavelengths = currentCube.Metadata.Wavelengths,
+                Spectrum = spectrum,
+                Color = spectrumColors[
+                    (nextSpectrumId - 1) % spectrumColors.Length]
+            };
+
+            nextSpectrumId++;
+
+            selectedSpectra.Add(selection);
+            SpectrumManager.AddSpectrum(selection);
+            Spectrum.AddSelectedSpectrum(selection);
         }
     }
 }

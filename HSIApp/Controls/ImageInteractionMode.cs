@@ -4,6 +4,7 @@
     {
         Normal,
         Pan,
-        Selection
+        Selection,
+        RectangleSelection
     }
 }
