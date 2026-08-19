@@ -5,6 +5,8 @@ using HSIApp.Models;
 using HSIApp.Controls;
 using System.Windows.Controls;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 
 namespace HSIApp
 {
@@ -38,6 +40,7 @@ namespace HSIApp
             InitializeComponent();
 
             Viewer.PixelHovered += Viewer_PixelHovered;
+            Viewer.PixelHoverEnded += Viewer_PixelHoverEnded;
             Viewer.PixelClicked += Viewer_PixelClicked;
 
             Viewer.PanModeChanged += Viewer_PanModeChanged;
@@ -50,6 +53,9 @@ namespace HSIApp
             SpectrumManager.SpectrumSelectionChanged +=
                 SpectrumManager_SpectrumSelectionChanged;
 
+            SpectrumManager.SaveSpectraRequested +=
+                SpectrumManager_SaveSpectraRequested;
+            
             SpectrumManager.SpectrumRemoved +=
                 SpectrumManager_SpectrumRemoved;
         }
@@ -90,6 +96,11 @@ namespace HSIApp
             Spectrum.DisplaySpectrum(
                 currentCube.Metadata.Wavelengths,
                 spectrum, x, y);
+        }
+
+        private void Viewer_PixelHoverEnded()
+        {
+            Spectrum.ClearCursorSpectrum();
         }
 
         private void Viewer_PixelClicked(int x, int y)
@@ -143,6 +154,59 @@ namespace HSIApp
             Spectrum.RemoveSelectedSpectrum(selection);
 
             selectedSpectra.Remove(selection);
+        }
+
+        private void SpectrumManager_SaveSpectraRequested(
+            IList<SpectrumSelection> selections)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Save spectra",
+                Filter = "CSV files (*.csv)|*.csv",
+                DefaultExt = ".csv",
+                FileName = "spectra.csv"
+            };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            try
+            {
+                using var writer = new StreamWriter(dialog.FileName);
+
+                writer.WriteLine(
+                    "SpectrumName,X,Y,WavelengthNm,Reflectance");
+
+                foreach (var selection in selections)
+                {
+                    int pointCount = Math.Min(
+                        selection.Wavelengths.Length,
+                        selection.Spectrum.Length);
+
+                    for (int i = 0; i < pointCount; i++)
+                    {
+                        writer.WriteLine(string.Join(",",
+                            CsvEscape(selection.Name),
+                            selection.X.ToString(CultureInfo.InvariantCulture),
+                            selection.Y.ToString(CultureInfo.InvariantCulture),
+                            selection.Wavelengths[i].ToString(CultureInfo.InvariantCulture),
+                            selection.Spectrum[i].ToString(CultureInfo.InvariantCulture)));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Failed to save spectra:\n{ex.Message}",
+                    "Save Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private static string CsvEscape(string value)
+        {
+            return $"\"{value.Replace("\"", "\"\"")}\"";
         }
 
         private void Spectrum_InteractiveChanged(bool interactive)

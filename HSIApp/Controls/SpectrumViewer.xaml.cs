@@ -33,6 +33,19 @@ namespace HSIApp.Controls
             updatingInteractive = false;
         }
 
+        public void ClearCursorSpectrum()
+        {
+            if (cursorSpectrum == null)
+                return;
+
+            SpectrumPlot.Plot.Remove(cursorSpectrum);
+            cursorSpectrum = null;
+
+            PixelLabel.Text = "Pixel: X = -, Y = -";
+
+            SpectrumPlot.Refresh();
+        }
+
         public void DisplaySpectrum(
             double[] wavelengths,
             float[] spectrum,
@@ -147,15 +160,7 @@ namespace HSIApp.Controls
             if (updatingInteractive)
                 return;
 
-            if (cursorSpectrum != null)
-            {
-                SpectrumPlot.Plot.Remove(cursorSpectrum);
-                cursorSpectrum = null;
-            }
-
-            PixelLabel.Text = "Pixel: X = -, Y = -";
-
-            SpectrumPlot.Refresh();
+            ClearCursorSpectrum();
 
             InteractiveChanged?.Invoke(false);
         }

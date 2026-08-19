@@ -35,6 +35,29 @@ namespace HSIApp.Controls
                 .ToList();
         }
 
+        private void SelectAllSpectra_Click(object sender, RoutedEventArgs e)
+        {
+            SpectrumList.SelectAll();
+        }
+
+        private void SaveSelectedSpectra_Click(object sender, RoutedEventArgs e)
+        {
+            var selections = GetSelectedSpectra();
+
+            if (selections.Count == 0)
+            {
+                MessageBox.Show(
+                    "Select one or more spectra to save.",
+                    "No spectra selected",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return;
+            }
+
+            SaveSpectraRequested?.Invoke(selections);
+        }
+
         private void DeleteSelectedSpectra_Click(
             object sender,
             RoutedEventArgs e)
@@ -77,6 +100,9 @@ namespace HSIApp.Controls
         public event Action<SpectrumSelection, bool>?
             SpectrumSelectionChanged;
 
+        public event Action<IList<SpectrumSelection>>?
+            SaveSpectraRequested;
+        
         public event Action<SpectrumSelection>?
             SpectrumRemoved;
 

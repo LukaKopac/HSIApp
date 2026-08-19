@@ -39,6 +39,7 @@ namespace HSIApp.Controls
         }
 
         public event Action<int, int>? PixelHovered;
+        public event Action? PixelHoverEnded;
         public event Action<int, int>? PixelClicked;
         public event Action<bool>? PanModeChanged;
         public event Action<int, int, int, int>? RectangleSelected;
@@ -159,6 +160,11 @@ namespace HSIApp.Controls
             }
 
             return true;
+        }
+
+        private void BandImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            PixelHoverEnded?.Invoke();
         }
 
         private void ImageViewport_MouseMove(object sender, MouseEventArgs e)

@@ -39,6 +39,31 @@
                             Height="28"
                             Padding="0"
                             Margin="0,0,0,4"
+                            ToolTip="Select all spectra"
+                            Click="SelectAllSpectra_Click">
+                        <TextBlock Text="✓"
+                                   FontWeight="Bold"
+                                   FontSize="18"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+
+                    <Button Width="28"
+                            Height="28"
+                            Padding="0"
+                            Margin="0,0,0,4"
+                            ToolTip="Save selected spectra"
+                            Click="SaveSelectedSpectra_Click">
+                        <TextBlock Text="💾"
+                                   FontSize="15"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                    </Button>
+
+                    <Button Width="28"
+                            Height="28"
+                            Padding="0"
+                            Margin="0,0,0,4"
                             ToolTip="Delete selected spectra"
                             Click="DeleteSelectedSpectra_Click">
 
