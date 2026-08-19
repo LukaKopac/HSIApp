@@ -102,19 +102,27 @@
 
                     <!-- Pan -->
                     <ToggleButton x:Name="PanButton"
-                                  Content="P"
                                   Width="30"
                                   Height="30"
                                   HorizontalAlignment="Right"
+                                  ToolTip="Pan image"
                                   Checked="PanButton_Checked"
-                                  Unchecked="PanButton_Unchecked"/>
+                                  Unchecked="PanButton_Unchecked">
+                        <Image Source="/Media/Icons/PanHand.png"
+                               Width="20"
+                               Height="20"/>
+                    </ToggleButton>
 
                     <!-- Fit image -->
-                    <Button Content="F"
-                            Width="30"
+                    <Button Width="30"
                             Height="30"
                             HorizontalAlignment="Right"
-                            Click="FitButton_Click"/>
+                            ToolTip="Fit image"
+                            Click="FitButton_Click">
+                        <Image Source="/Media/Icons/FitImage.png"
+                               Width="18"
+                               Height="18"/>
+                    </Button>
 
                 </StackPanel>
 
