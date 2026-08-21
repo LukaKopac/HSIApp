@@ -128,7 +128,9 @@ namespace HSIApp.Controls
 
             DisplayBand(bandIndex);
 
-            BandLabel.Text = $"Band {bandIndex}";
+            double wavelength = currentCube.Metadata.Wavelengths[bandIndex];
+
+            BandLabel.Text = $"{wavelength:F1} nm";
         }
 
         private bool TryGetImagePixel(
@@ -475,7 +477,7 @@ namespace HSIApp.Controls
             if (SelectionModeComboBox.SelectedItem is not ComboBoxItem item)
                 return;
 
-            string? selectionMode = item.Content?.ToString();
+            string? selectionMode = item.Tag?.ToString();
 
             if (selectionMode == "Area Average")
             {

@@ -9,8 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Media\Icons\AreaAverage.png" />
     <None Remove="Media\Icons\FitImage.png" />
+    <None Remove="Media\Icons\MultipointSelection.png" />
     <None Remove="Media\Icons\PanHand.png" />
+    <None Remove="Media\Icons\RectangleSelection.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,10 +21,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Media\Icons\AreaAverage.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Media\Icons\FitImage.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Media\Icons\MultipointSelection.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Media\Icons\PanHand.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Media\Icons\RectangleSelection.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

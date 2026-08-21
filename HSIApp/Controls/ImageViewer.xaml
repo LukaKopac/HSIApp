@@ -67,61 +67,79 @@
                             Orientation="Vertical">
 
                     <ComboBox x:Name="SelectionModeComboBox"
+                              Style="{StaticResource ToolComboBoxStyle}"
                               Width="40"
-                              Height="30"
-                              IsEditable="True"
-                              IsReadOnly="True"
-                              Text="S"
-                              FontSize="16"
-                              FontWeight="Bold"
                               SelectedIndex="0"
                               SelectionChanged="SelectionModeComboBox_SelectionChanged">
 
                         <ComboBoxItem x:Name="AreaAverageSelectionItem"
-                                      Content="Area Average"/>
+                                      Tag="Area Average"
+                                      Style="{StaticResource ToolComboBoxItemStyle}">
 
-                        <ComboBoxItem Content="Rectangle"/>
+                            <Image Source="/Media/Icons/AreaAverage.png"
+                                   Width="18"
+                                   Height="18"/>
 
-                        <ComboBoxItem Content="Multipoint"/>
+                        </ComboBoxItem>
+
+                        <ComboBoxItem Tag="Rectangle"
+                                      Style="{StaticResource ToolComboBoxItemStyle}">
+
+                            <Image Source="/Media/Icons/RectangleSelection.png"
+                                   Width="18"
+                                   Height="18"/>
+
+                        </ComboBoxItem>
+
+                        <ComboBoxItem Tag="Multipoint"
+                                      Style="{StaticResource ToolComboBoxItemStyle}">
+
+                            <Image Source="/Media/Icons/MultipointSelection.png"
+                                   Width="18"
+                                   Height="18"/>
+
+                        </ComboBoxItem>
 
                     </ComboBox>
 
                     <!-- Zoom in -->
-                    <Button Content="+"
-                            Width="30"
-                            Height="30"
+                    <Button Style="{StaticResource ToolButtonStyle}"
+                            Content="+"
                             HorizontalAlignment="Right"
+                            ToolTip="Zoom in"
                             Click="ZoomInButton_Click"/>
 
                     <!-- Zoom out -->
-                    <Button Content="−"
-                            Width="30"
-                            Height="30"
+                    <Button Style="{StaticResource ToolButtonStyle}"
+                            Content="−"
                             HorizontalAlignment="Right"
+                            ToolTip="Zoom out"
                             Click="ZoomOutButton_Click"/>
 
                     <!-- Pan -->
                     <ToggleButton x:Name="PanButton"
-                                  Width="30"
-                                  Height="30"
+                                  Style="{StaticResource ToolToggleButtonStyle}"
                                   HorizontalAlignment="Right"
                                   ToolTip="Pan image"
                                   Checked="PanButton_Checked"
                                   Unchecked="PanButton_Unchecked">
+
                         <Image Source="/Media/Icons/PanHand.png"
                                Width="20"
                                Height="20"/>
+
                     </ToggleButton>
 
                     <!-- Fit image -->
-                    <Button Width="30"
-                            Height="30"
+                    <Button Style="{StaticResource ToolButtonStyle}"
                             HorizontalAlignment="Right"
                             ToolTip="Fit image"
                             Click="FitButton_Click">
+
                         <Image Source="/Media/Icons/FitImage.png"
                                Width="18"
                                Height="18"/>
+
                     </Button>
 
                 </StackPanel>
@@ -132,16 +150,22 @@
 
         <!-- Band controls -->
 
-        <StackPanel Grid.Row="1"
-                    Orientation="Horizontal"
-                    Margin="5">
+        <Grid Grid.Row="1"
+              Margin="5">
 
-            <TextBlock Text="Band:"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="Wavelength:"
                        VerticalAlignment="Center"
                        Margin="0,0,10,0"/>
 
             <Slider x:Name="BandSlider"
-                    Width="350"
+                    Grid.Column="1"
                     Minimum="0"
                     Maximum="287"
                     Value="0"
@@ -150,11 +174,12 @@
                     ValueChanged="BandSlider_ValueChanged"/>
 
             <TextBlock x:Name="BandLabel"
+                       Grid.Column="2"
                        Margin="15,0,0,0"
                        VerticalAlignment="Center"
                        Text="Band 0"/>
 
-        </StackPanel>
+        </Grid>
 
     </Grid>
 

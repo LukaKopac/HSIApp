@@ -1,0 +1,364 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+
+    <!-- Simple toggle button used inside ComboBox -->
+
+    <ControlTemplate x:Key="ComboBoxToggleButtonTemplate"
+                 TargetType="ToggleButton">
+
+        <ContentPresenter
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"/>
+
+    </ControlTemplate>
+
+    <!-- Button appearance -->
+
+    <ControlTemplate x:Key="RoundedButtonTemplate"
+                 TargetType="Button">
+
+        <Border x:Name="ButtonBorder"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="5">
+
+            <ContentPresenter
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Margin="{TemplateBinding Padding}"/>
+
+        </Border>
+
+        <ControlTemplate.Triggers>
+
+            <Trigger Property="IsMouseOver"
+                 Value="True">
+
+                <Setter TargetName="ButtonBorder"
+                    Property="Background"
+                    Value="#E5E5E5"/>
+
+            </Trigger>
+
+            <Trigger Property="IsPressed"
+                 Value="True">
+
+                <Setter TargetName="ButtonBorder"
+                    Property="Background"
+                    Value="#D5D5D5"/>
+
+            </Trigger>
+
+        </ControlTemplate.Triggers>
+
+    </ControlTemplate>
+
+
+    <!-- Normal button style -->
+
+    <Style x:Key="ActionButtonStyle"
+           TargetType="Button">
+
+        <Setter Property="Height"
+                Value="34"/>
+
+        <Setter Property="Padding"
+                Value="16,0"/>
+
+        <Setter Property="Background"
+                Value="#F5F5F5"/>
+
+        <Setter Property="BorderBrush"
+                Value="#D0D0D0"/>
+
+        <Setter Property="BorderThickness"
+                Value="1"/>
+
+        <Setter Property="Template"
+                Value="{StaticResource RoundedButtonTemplate}"/>
+
+    </Style>
+    
+    <!-- Tool button style -->
+
+    <Style x:Key="ToolButtonStyle"
+       TargetType="Button">
+
+        <Setter Property="Width"
+            Value="32"/>
+
+        <Setter Property="Height"
+            Value="32"/>
+
+        <Setter Property="Margin"
+            Value="2"/>
+
+        <Setter Property="Padding"
+            Value="0"/>
+
+        <Setter Property="Background"
+            Value="#F5F5F5"/>
+
+        <Setter Property="BorderBrush"
+            Value="#D0D0D0"/>
+
+        <Setter Property="BorderThickness"
+            Value="1"/>
+
+        <Setter Property="Template"
+            Value="{StaticResource RoundedButtonTemplate}"/>
+
+    </Style>
+
+    <!-- Tool toggle button -->
+
+    <ControlTemplate x:Key="RoundedToggleButtonTemplate"
+                 TargetType="ToggleButton">
+
+        <Border x:Name="ButtonBorder"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            CornerRadius="5">
+
+            <ContentPresenter
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Margin="{TemplateBinding Padding}"/>
+
+        </Border>
+
+        <ControlTemplate.Triggers>
+
+            <!-- Hover -->
+
+            <Trigger Property="IsMouseOver"
+                 Value="True">
+
+                <Setter TargetName="ButtonBorder"
+                    Property="Background"
+                    Value="#E5E5E5"/>
+
+            </Trigger>
+
+            <!-- Pressed -->
+
+            <Trigger Property="IsPressed"
+                 Value="True">
+
+                <Setter TargetName="ButtonBorder"
+                    Property="Background"
+                    Value="#D5D5D5"/>
+
+            </Trigger>
+
+            <!-- Active / checked -->
+
+            <Trigger Property="IsChecked"
+                 Value="True">
+
+                <Setter TargetName="ButtonBorder"
+                    Property="Background"
+                    Value="#D0D0D0"/>
+
+                <Setter TargetName="ButtonBorder"
+                    Property="BorderBrush"
+                    Value="#A0A0A0"/>
+
+            </Trigger>
+
+        </ControlTemplate.Triggers>
+
+    </ControlTemplate>
+
+
+    <Style x:Key="ToolToggleButtonStyle"
+       TargetType="ToggleButton">
+
+        <Setter Property="Width"
+            Value="32"/>
+
+        <Setter Property="Height"
+            Value="32"/>
+
+        <Setter Property="Margin"
+            Value="2"/>
+
+        <Setter Property="Padding"
+            Value="0"/>
+
+        <Setter Property="Background"
+            Value="#F5F5F5"/>
+
+        <Setter Property="BorderBrush"
+            Value="#D0D0D0"/>
+
+        <Setter Property="BorderThickness"
+            Value="1"/>
+
+        <Setter Property="Template"
+            Value="{StaticResource RoundedToggleButtonTemplate}"/>
+
+    </Style>
+    
+    <!-- ComboBox -->
+
+    <Style x:Key="ToolComboBoxStyle"
+       TargetType="ComboBox">
+
+        <Setter Property="Width"
+            Value="32"/>
+
+        <Setter Property="Height"
+            Value="32"/>
+
+        <Setter Property="Margin"
+            Value="2"/>
+
+        <Setter Property="Background"
+            Value="#F5F5F5"/>
+
+        <Setter Property="BorderBrush"
+            Value="#D0D0D0"/>
+
+        <Setter Property="BorderThickness"
+            Value="1"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+
+                <ControlTemplate TargetType="ComboBox">
+
+                    <Grid>
+
+                        <!-- The clickable part -->
+
+                        <ToggleButton
+                            x:Name="DropDownToggle"
+                            Template="{StaticResource ComboBoxToggleButtonTemplate}"
+                            IsChecked="{Binding IsDropDownOpen,
+                                                RelativeSource={RelativeSource TemplatedParent}}"
+                            ClickMode="Press">
+
+                            <Border
+                                x:Name="ComboBoxBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch">
+
+                                <Grid>
+
+                                    <!-- Selected icon -->
+
+                                    <ContentPresenter
+                                    Content="{TemplateBinding SelectionBoxItem}"
+                                    ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Margin="5,0,14,0"/>
+
+                                    <!-- Arrow -->
+
+                                    <TextBlock
+                                    Text="▼"
+                                    FontSize="7"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,5,0"/>
+
+                                </Grid>
+
+                            </Border>
+
+                        </ToggleButton>
+
+
+                        <!-- Dropdown -->
+
+                        <Popup
+                        x:Name="PART_Popup"
+                        Placement="Bottom"
+                        IsOpen="{TemplateBinding IsDropDownOpen}"
+                        AllowsTransparency="True">
+
+                            <Border
+                            Background="#F5F5F5"
+                            BorderBrush="#D0D0D0"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            Padding="2">
+
+                                <ItemsPresenter/>
+
+                            </Border>
+
+                        </Popup>
+
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+
+                        <!-- Hover -->
+
+                        <DataTrigger Binding="{Binding IsMouseOver,
+                                    ElementName=DropDownToggle}"
+                                    Value="True">
+
+                            <Setter TargetName="ComboBoxBorder"
+                                    Property="Background"
+                                    Value="#E5E5E5"/>
+
+                        </DataTrigger>
+
+
+                        <!-- Open -->
+
+                        <DataTrigger Binding="{Binding IsChecked,
+                                    ElementName=DropDownToggle}"
+                                    Value="True">
+
+                            <Setter TargetName="ComboBoxBorder"
+                                    Property="Background"
+                                    Value="#DCDCDC"/>
+
+                        </DataTrigger>
+
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
+    <Style x:Key="ToolComboBoxItemStyle"
+       TargetType="ComboBoxItem">
+
+        <Setter Property="Width"
+            Value="32"/>
+
+        <Setter Property="Height"
+            Value="28"/>
+
+        <Setter Property="HorizontalContentAlignment"
+            Value="Center"/>
+
+        <Setter Property="VerticalContentAlignment"
+            Value="Center"/>
+
+        <Setter Property="Padding"
+            Value="0"/>
+
+        <Setter Property="Margin"
+            Value="1"/>
+
+    </Style>
+
+</ResourceDictionary>
