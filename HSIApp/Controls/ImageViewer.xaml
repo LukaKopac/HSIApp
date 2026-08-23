@@ -70,10 +70,12 @@
                               Style="{StaticResource ToolComboBoxStyle}"
                               Width="40"
                               SelectedIndex="0"
+                              ToolTip="Selection mode"
                               SelectionChanged="SelectionModeComboBox_SelectionChanged">
 
                         <ComboBoxItem x:Name="AreaAverageSelectionItem"
                                       Tag="Area Average"
+                                      ToolTip="Area Average"
                                       Style="{StaticResource ToolComboBoxItemStyle}">
 
                             <Image Source="/Media/Icons/AreaAverage.png"
@@ -83,6 +85,7 @@
                         </ComboBoxItem>
 
                         <ComboBoxItem Tag="Rectangle"
+                                      ToolTip="Rectangle"
                                       Style="{StaticResource ToolComboBoxItemStyle}">
 
                             <Image Source="/Media/Icons/RectangleSelection.png"
@@ -92,6 +95,7 @@
                         </ComboBoxItem>
 
                         <ComboBoxItem Tag="Multipoint"
+                                      ToolTip="Multipoint"
                                       Style="{StaticResource ToolComboBoxItemStyle}">
 
                             <Image Source="/Media/Icons/MultipointSelection.png"
@@ -105,6 +109,8 @@
                     <!-- Zoom in -->
                     <Button Style="{StaticResource ToolButtonStyle}"
                             Content="+"
+                            FontSize="20"
+                            FontWeight="Bold"
                             HorizontalAlignment="Right"
                             ToolTip="Zoom in"
                             Click="ZoomInButton_Click"/>
@@ -112,6 +118,8 @@
                     <!-- Zoom out -->
                     <Button Style="{StaticResource ToolButtonStyle}"
                             Content="−"
+                            FontSize="20"
+                            FontWeight="Bold"
                             HorizontalAlignment="Right"
                             ToolTip="Zoom out"
                             Click="ZoomOutButton_Click"/>

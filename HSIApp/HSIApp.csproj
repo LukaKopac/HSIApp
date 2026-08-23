@@ -14,6 +14,8 @@
     <None Remove="Media\Icons\MultipointSelection.png" />
     <None Remove="Media\Icons\PanHand.png" />
     <None Remove="Media\Icons\RectangleSelection.png" />
+    <None Remove="Media\Icons\SelectAll.png" />
+    <None Remove="Media\Icons\TrashCan.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +36,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Media\Icons\RectangleSelection.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Media\Icons\SelectAll.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Media\Icons\TrashCan.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

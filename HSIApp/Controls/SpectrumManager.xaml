@@ -35,23 +35,15 @@
                             VerticalAlignment="Top"
                             Margin="3">
 
-                    <Button Width="28"
-                            Height="28"
-                            Padding="0"
-                            Margin="0,0,0,4"
+                    <Button Style="{StaticResource ToolButtonStyle}"
                             ToolTip="Select all spectra"
                             Click="SelectAllSpectra_Click">
-                        <TextBlock Text="✓"
-                                   FontWeight="Bold"
-                                   FontSize="18"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+                        <Image Source="/Media/Icons/SelectAll.png"
+                               Height="18"
+                               Width="18"/>
                     </Button>
 
-                    <Button Width="28"
-                            Height="28"
-                            Padding="0"
-                            Margin="0,0,0,4"
+                    <Button Style="{StaticResource ToolButtonStyle}"
                             ToolTip="Save selected spectra"
                             Click="SaveSelectedSpectra_Click">
                         <TextBlock Text="💾"
@@ -60,19 +52,13 @@
                                    VerticalAlignment="Center"/>
                     </Button>
 
-                    <Button Width="28"
-                            Height="28"
-                            Padding="0"
-                            Margin="0,0,0,4"
+                    <Button Style="{StaticResource ToolButtonStyle}"
                             ToolTip="Delete selected spectra"
                             Click="DeleteSelectedSpectra_Click">
 
-                        <TextBlock Text="×"
-                                   FontWeight="Bold"
-                                   FontSize="24"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
+                        <Image Source="/Media/Icons/TrashCan.png"
+                               Height="18"
+                               Width="18"/>
                     </Button>
 
                 </StackPanel>
