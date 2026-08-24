@@ -54,14 +54,57 @@
                     <TextBlock Text="Status"
                                Margin="10,5,10,2"/>
 
-                    <TextBlock Text="No cube loaded"
-                               Margin="10,0,10,10"/>
+                    <TextBlock Text="{Binding Status}"
+                               Margin="10,0,10,10"
+                               TextWrapping="Wrap"/>
 
                     <TextBlock Text="CUBES"
                                FontWeight="Bold"
                                Margin="10,15,10,5"/>
 
-                    <ListBox Margin="10"/>
+                    <ListBox x:Name="CubeList"
+                             Margin="10"
+                             ItemsSource="{Binding Cubes}"
+                             SelectedItem="{Binding ActiveCube, Mode=TwoWay}">
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border Padding="5">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"/>
+
+                                        <StackPanel Grid.Row="1"
+                                                    Margin="0,5,0,0"
+                                                    Orientation="Horizontal">
+
+                                            <Button Content="Set active"
+                                                    Margin="0,0,5,0"
+                                                    Padding="5,2"
+                                                    Click="SetActiveCube_Click"/>
+
+                                            <Button Content="Info"
+                                                    Margin="0,0,5,0"
+                                                    Padding="5,2"
+                                                    Click="CubeInfo_Click"/>
+
+                                            <Button Content="Remove"
+                                                    Padding="5,2"
+                                                    Click="RemoveCube_Click"/>
+
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        
+                    </ListBox>
 
                     <TextBlock Text="MODELS"
                                FontWeight="Bold"

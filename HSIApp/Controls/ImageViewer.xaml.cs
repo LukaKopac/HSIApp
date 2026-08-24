@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media;
 using HSIApp.Models;
+using System.Linq;
 
 namespace HSIApp.Controls
 {
@@ -97,6 +98,8 @@ namespace HSIApp.Controls
 
         public void LoadCube(HsiCube cube)
         {
+            ClearSpectrumMarkers();
+            
             currentCube = cube;
 
             BandSlider.Minimum = 0;
@@ -186,6 +189,29 @@ namespace HSIApp.Controls
         {
             return new SolidColorBrush(
                 Color.FromArgb(alpha, color.R, color.G, color.B));
+        }
+
+        public void ClearSpectrumMarkers()
+        {
+            foreach (SpectrumSelection selection in
+                spectrumMarkers.Keys.ToList())
+            {
+                RemoveSpectrumMarker(selection);
+            }
+        }
+
+        public void ClearCube()
+        {
+            ClearSpectrumMarkers();
+
+            currentCube = null;
+            BandImage.Source = null;
+
+            BandSlider.Minimum = 0;
+            BandSlider.Maximum = 0;
+            BandSlider.Value = 0;
+
+            BandLabel.Text = "No cube loaded";
         }
 
         private void DisplayBand(int bandIndex)

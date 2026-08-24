@@ -19,6 +19,8 @@ namespace HSIApp.Models
 
         public int Id { get; set; }
 
+        public Guid CubeId { get; set; }
+
         public string Name
         {
             get => name;

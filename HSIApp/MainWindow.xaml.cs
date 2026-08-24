@@ -1,19 +1,26 @@
-﻿using Microsoft.Win32;
+﻿using HSIApp.Models;
+using HSIApp.Controls;
+using HSIApp.ViewModels;
+using HSIApp.Windows;
+using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows;
-using HSIApp.Models;
-using HSIApp.Controls;
 using System.Windows.Controls;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Windows.Media.Media3D;
+using System.ComponentModel;
+using System.Linq;
 
 namespace HSIApp
 {
     public partial class MainWindow : Window
     {
 
-        private HsiCube? currentCube;
+        private readonly ProjectViewModel project = new();
+
+        private HsiCube? currentCube => project.ActiveCube?.Cube;
         private List<SpectrumSelection> selectedSpectra = new();
         private int spectrumAveragingSize = 5;
         private int nextSpectrumId = 1;
@@ -39,6 +46,10 @@ namespace HSIApp
         {
             InitializeComponent();
 
+            DataContext = project;
+
+            project.PropertyChanged += Project_PropertyChanged;
+
             Viewer.PixelHovered += Viewer_PixelHovered;
             Viewer.PixelHoverEnded += Viewer_PixelHoverEnded;
             Viewer.PixelClicked += Viewer_PixelClicked;
@@ -60,21 +71,60 @@ namespace HSIApp
                 SpectrumManager_SpectrumRemoved;
         }
 
+        private void Project_PropertyChanged(
+            object? sender,
+            PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != nameof(ProjectViewModel.ActiveCube))
+                return;
+
+            Spectrum.ClearCursorSpectrum();
+
+            if (project.ActiveCube == null)
+            {
+                Viewer.ClearCube();
+                return;
+            }
+
+            Viewer.LoadCube(project.ActiveCube.Cube);
+
+            foreach (SpectrumSelection selection in selectedSpectra
+                .Where(selection => selection.CubeId == project.ActiveCube.Id))
+            {
+                Viewer.AddSpectrumMarker(selection);
+            }
+        }
+        
         private void OpenCube_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog dialog = new OpenFileDialog();
-
-            dialog.Title = "Select hyperspectral cube";
-            dialog.Filter = "RAW files (*.raw)|*.raw|All files (*.*)|*.*";
+            var dialog = new OpenFileDialog
+            {
+                Title = "Select hyperspectra cube",
+                Filter = "RAW files (*.raw)|*.raw|All files (*.*)|*.*"
+            };
 
             if (dialog.ShowDialog() != true)
                 return;
 
             try
             {
-                currentCube = HsiLoader.Load(dialog.FileName);
+                string sourcePath = Path.GetFullPath(dialog.FileName);
 
-                Viewer.LoadCube(currentCube);
+                LoadedCube? existingCube = project.FindByPath(sourcePath);
+
+                if (existingCube != null)
+                {
+                    project.ActiveCube = existingCube;
+                    return;
+                }
+
+                HsiCube cube = HsiLoader.Load(sourcePath);
+
+                project.AddCube(new LoadedCube
+                {
+                    SourcePath = sourcePath,
+                    Cube = cube
+                });
             }
             catch (Exception ex)
             {
@@ -105,7 +155,7 @@ namespace HSIApp
 
         private void Viewer_PixelClicked(int x, int y)
         {
-            if (currentCube == null)
+            if (currentCube == null || project.ActiveCube == null)
                 return;
 
             if (!Spectrum.IsInteractive)
@@ -116,6 +166,7 @@ namespace HSIApp
             SpectrumSelection selection = new SpectrumSelection
             {
                 Id = nextSpectrumId,
+                CubeId = project.ActiveCube!.Id,
                 Name = $"Spectrum {nextSpectrumId}",
                 X = x,
                 Y = y,
@@ -253,7 +304,7 @@ namespace HSIApp
             int width,
             int height)
         {
-            if (currentCube == null)
+            if (currentCube == null || project.ActiveCube == null)
                 return;
 
             if (!Spectrum.IsInteractive)
@@ -268,6 +319,7 @@ namespace HSIApp
             SpectrumSelection selection = new SpectrumSelection
             {
                 Id = nextSpectrumId,
+                CubeId = project.ActiveCube!.Id,
                 Name = $"Rectangle {nextSpectrumId} ({width} × {height})",
                 X = x,
                 Y = y,
@@ -286,6 +338,63 @@ namespace HSIApp
             SpectrumManager.AddSpectrum(selection);
             Spectrum.AddSelectedSpectrum(selection);
             Viewer.AddSpectrumMarker(selection);
+        }
+
+        private void SetActiveCube_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { DataContext: LoadedCube cube })
+            {
+                project.ActiveCube = cube;
+            }
+        }
+
+        private void CubeInfo_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { DataContext: LoadedCube cube })
+                return;
+
+            var window = new CubeInfoWindow(cube)
+            {
+                Owner = this
+            };
+
+            window.ShowDialog();
+        }
+
+        private void RemoveCube_Click(Object sender, RoutedEventArgs e)
+        {
+            if (sender is not Button { DataContext: LoadedCube cube })
+                return;
+
+            List<SpectrumSelection> spectraToRemove = selectedSpectra
+                .Where(selection => selection.CubeId == cube.Id)
+                .ToList();
+
+            string message =
+                spectraToRemove.Count == 0
+                ? $"Remove '{cube.DisplayName}' from this project?"
+                : $"Remove '{cube.DisplayName}' and its " +
+                  $"{spectraToRemove.Count} associated spectra?";
+
+            if (MessageBox.Show(
+                    message,
+                    "Remove cube",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            foreach (SpectrumSelection selection in spectraToRemove)
+            {
+                SpectrumManager.RemoveSpectrum(selection);
+                Spectrum.RemoveSelectedSpectrum(selection);
+                Viewer.RemoveSpectrumMarker(selection);
+
+                selectedSpectra.Remove(selection);
+            }
+
+            project.RemoveCube(cube);
         }
     }
 }
