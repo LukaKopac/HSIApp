@@ -5,6 +5,10 @@ using System.Windows.Input;
 using System.Diagnostics;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Media;
+using HSIApp.Models;
 
 namespace HSIApp.Controls
 {
@@ -32,6 +36,8 @@ namespace HSIApp.Controls
         private int rectangleStartY;
 
         private bool updatingInteractionMode = false;
+
+        private readonly Dictionary<SpectrumSelection, Rectangle> spectrumMarkers = new();
 
         public ImageViewer()
         {
@@ -101,6 +107,85 @@ namespace HSIApp.Controls
 
             Debug.WriteLine(
                 $"Cube: {cube.Width} x {cube.Height} x {cube.Bands}");
+        }
+
+        public void AddSpectrumMarker(SpectrumSelection selection)
+        {
+            if (currentCube == null || spectrumMarkers.ContainsKey(selection))
+                return;
+
+            int left;
+            int top;
+            int width;
+            int height;
+
+            if (selection.Kind == SpectrumSelectionKind.AreaAverage)
+            {
+                int horizontalRadius = selection.Width / 2;
+                int verticalRadius = selection.Height / 2;
+
+                left = Math.Max(0, selection.X - horizontalRadius);
+                top = Math.Max(0, selection.Y - verticalRadius);
+
+                int right = Math.Min(currentCube.Width - 1, selection.X + horizontalRadius);
+                int bottom = Math.Min(currentCube.Height - 1, selection.Y + verticalRadius);
+
+                width = right - left + 1;
+                height = bottom - top + 1;
+            }
+            else
+            {
+                left = selection.X;
+                top = selection.Y;
+                width = selection.Width;
+                height = selection.Height;
+            }
+
+            var marker = new Rectangle
+            {
+                Width = width,
+                Height = height,
+                Stroke = CreateMarkerBrush(selection.Color, 255),
+                Fill = CreateMarkerBrush(selection.Color, 48),
+                StrokeThickness = 1,
+                IsHitTestVisible = false
+            };
+
+            Canvas.SetLeft(marker, left);
+            Canvas.SetTop(marker, top);
+
+            spectrumMarkers.Add(selection, marker);
+            ImageCanvas.Children.Add(marker);
+
+            selection.PropertyChanged += SpectrumSelection_PropertyChanged;
+        }
+
+        public void RemoveSpectrumMarker(SpectrumSelection selection)
+        {
+            if (!spectrumMarkers.Remove(selection, out Rectangle? marker))
+                return;
+
+            selection.PropertyChanged -= SpectrumSelection_PropertyChanged;
+            ImageCanvas.Children.Remove(marker);
+        }
+
+        private void SpectrumSelection_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is not SpectrumSelection selection ||
+                e.PropertyName != nameof(SpectrumSelection.Color) ||
+                !spectrumMarkers.TryGetValue(selection, out Rectangle? marker))
+            {
+                return;
+            }
+
+            marker.Stroke = CreateMarkerBrush(selection.Color, 255);
+            marker.Fill = CreateMarkerBrush(selection.Color, 48);
+        }
+
+        private static Brush CreateMarkerBrush(System.Drawing.Color color, byte alpha)
+        {
+            return new SolidColorBrush(
+                Color.FromArgb(alpha, color.R, color.G, color.B));
         }
 
         private void DisplayBand(int bandIndex)

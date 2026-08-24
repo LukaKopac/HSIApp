@@ -119,6 +119,9 @@ namespace HSIApp
                 Name = $"Spectrum {nextSpectrumId}",
                 X = x,
                 Y = y,
+                Kind = SpectrumSelectionKind.AreaAverage,
+                Width = spectrumAveragingSize,
+                Height = spectrumAveragingSize,
                 Wavelengths = currentCube.Metadata.Wavelengths,
                 Spectrum = spectrum,
                 Color = spectrumColors[(nextSpectrumId - 1) % spectrumColors.Length]
@@ -131,6 +134,8 @@ namespace HSIApp
             SpectrumManager.AddSpectrum(selection);
 
             Spectrum.AddSelectedSpectrum(selection);
+
+            Viewer.AddSpectrumMarker(selection);
 
             Debug.WriteLine(
                 $"Added {selection.Name} at ({selection.X}, {selection.Y})");
@@ -152,6 +157,7 @@ namespace HSIApp
             SpectrumSelection selection)
         {
             Spectrum.RemoveSelectedSpectrum(selection);
+            Viewer.RemoveSpectrumMarker(selection);
 
             selectedSpectra.Remove(selection);
         }
@@ -242,10 +248,10 @@ namespace HSIApp
         }
 
         private void Viewer_RectangleSelected(
-    int x,
-    int y,
-    int width,
-    int height)
+            int x,
+            int y,
+            int width,
+            int height)
         {
             if (currentCube == null)
                 return;
@@ -265,6 +271,9 @@ namespace HSIApp
                 Name = $"Rectangle {nextSpectrumId} ({width} × {height})",
                 X = x,
                 Y = y,
+                Kind = SpectrumSelectionKind.Rectangle,
+                Width = width,
+                Height = height,
                 Wavelengths = currentCube.Metadata.Wavelengths,
                 Spectrum = spectrum,
                 Color = spectrumColors[
@@ -276,6 +285,7 @@ namespace HSIApp
             selectedSpectra.Add(selection);
             SpectrumManager.AddSpectrum(selection);
             Spectrum.AddSelectedSpectrum(selection);
+            Viewer.AddSpectrumMarker(selection);
         }
     }
 }

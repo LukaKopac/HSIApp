@@ -5,6 +5,13 @@ using System.Windows.Media;
 
 namespace HSIApp.Models
 {
+    
+    public enum SpectrumSelectionKind
+    {
+        AreaAverage,
+        Rectangle
+    }
+    
     public class SpectrumSelection : INotifyPropertyChanged
     {
         private string name = "";
@@ -28,6 +35,11 @@ namespace HSIApp.Models
         public int X { get; set; }
 
         public int Y { get; set; }
+
+        public SpectrumSelectionKind Kind { get; set; }
+
+        public int Width { get; set; }
+        public int Height { get; set; }
 
         public double[] Wavelengths { get; set; }
             = Array.Empty<double>();
