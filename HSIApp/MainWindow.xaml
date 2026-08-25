@@ -13,10 +13,6 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_Open Cube"
                           Click="OpenCube_Click"/>
-                
-                <MenuItem Header="_Open Project"/>
-                <Separator/>
-                <MenuItem Header="_Exit"/>
             </MenuItem>
 
             <MenuItem Header="_Edit"/>
@@ -45,78 +41,154 @@
                     BorderBrush="Gray"
                     BorderThickness="0,0,1,0">
 
-                <StackPanel>
+                <Grid>
 
-                    <TextBlock Text="PROJECT"
-                               FontWeight="Bold"
-                               Margin="10"/>
-
-                    <TextBlock Text="Status"
-                               Margin="10,5,10,2"/>
-
-                    <TextBlock Text="{Binding Status}"
-                               Margin="10,0,10,10"
-                               TextWrapping="Wrap"/>
-
-                    <TextBlock Text="CUBES"
-                               FontWeight="Bold"
-                               Margin="10,15,10,5"/>
-
-                    <ListBox x:Name="CubeList"
-                             Margin="10"
-                             ItemsSource="{Binding Cubes}"
-                             SelectedItem="{Binding ActiveCube, Mode=TwoWay}">
-
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Padding="5">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-
-                                        <TextBlock Text="{Binding DisplayName}"
-                                                   FontWeight="SemiBold"
-                                                   TextTrimming="CharacterEllipsis"/>
-
-                                        <StackPanel Grid.Row="1"
-                                                    Margin="0,5,0,0"
-                                                    Orientation="Horizontal">
-
-                                            <Button Content="Set active"
-                                                    Margin="0,0,5,0"
-                                                    Padding="5,2"
-                                                    Click="SetActiveCube_Click"/>
-
-                                            <Button Content="Info"
-                                                    Margin="0,0,5,0"
-                                                    Padding="5,2"
-                                                    Click="CubeInfo_Click"/>
-
-                                            <Button Content="Remove"
-                                                    Padding="5,2"
-                                                    Click="RemoveCube_Click"/>
-
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
+                    <Grid.RowDefinitions>
+                        <!-- Project / Status -->
+                        <RowDefinition Height="Auto"/>
                         
-                    </ListBox>
+                        <!-- Cubes -->
+                        <RowDefinition Height="*"/>
+                        
+                        <!-- Models -->
+                        <RowDefinition Height="*"/>
+                        
+                        <!-- Process -->
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <TextBlock Text="MODELS"
-                               FontWeight="Bold"
-                               Margin="10,15,10,5"/>
+                    <!-- PROJECT / STATUS -->
+                    <StackPanel Grid.Row="0">
 
-                    <ListBox Margin="10"/>
+                        <TextBlock Text="PROJECT"
+                                   FontWeight="Bold"
+                                   Margin="10"/>
 
-                    <TextBlock Text="WORKFLOW"
-                               FontWeight="Bold"
-                               Margin="10,15,10,5"/>
+                        <TextBlock Text="Status"
+                                    Margin="10,5,10,2"/>
 
-                </StackPanel>
+                        <TextBlock Text="{Binding Status}"
+                                   Margin="10,0,10,10"
+                                   TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                    <!-- CUBES -->
+                    <Grid Grid.Row="1">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="CUBES"
+                                   Grid.Row="0"
+                                   FontWeight="Bold"
+                                   Margin="10,15,10,5"/>
+
+                        <ListBox x:Name="CubeList"
+                                 Grid.Row="1"
+                                 HorizontalContentAlignment="Stretch"
+                                 Margin="10"
+                                 ItemsSource="{Binding Cubes}"
+                                 SelectedItem="{Binding ActiveCube, Mode=TwoWay}"
+                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="HorizontalContentAlignment"
+                                            Value="Stretch"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="5"
+                                            ToolTip="{Binding DisplayName}">
+                                        <Grid>
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding DisplayName}"
+                                                       Grid.Column="0"
+                                                       FontWeight="SemiBold"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"/>
+
+                                            <StackPanel Margin="5,0,0,0"
+                                                        Grid.Column="1"
+                                                        Orientation="Horizontal">
+
+                                                <Button Margin="0,0,5,0"
+                                                        Padding="5,2"
+                                                        Style="{StaticResource ToolButtonStyle}"
+                                                        Click="CubeInfo_Click">
+                                                    <Image Source="/Media/Icons/Info.png"
+                                                           Height="18"
+                                                           Width="18"/>
+                                                </Button>
+
+                                                <Button Padding="5,2"
+                                                        Style="{StaticResource ToolButtonStyle}"
+                                                        Click="RemoveCube_Click">
+                                                    <Image Source="/Media/Icons/TrashCan.png"
+                                                           Height="18"
+                                                           Width="18"/>
+                                                </Button>
+
+                                            </StackPanel>
+
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                        </ListBox>
+                    </Grid>
+
+                    <!-- MODELS -->
+                    <Grid Grid.Row="2">
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="MODELS"
+                                   Grid.Row="0"
+                                   FontWeight="Bold"
+                                   Margin="10,15,10,5"/>
+
+                        <ListBox Grid.Row="1"
+                                 Margin="10"/>
+
+                    </Grid>
+                    
+                    <!-- PROCESS -->
+                    <StackPanel Grid.Row="3">
+
+                        <TextBlock Text="PROCESS"
+                                   Grid.Row="3"
+                                   FontWeight="Bold"
+                                   Margin="10,15,10,5"/>
+
+                        <Button Content="START"
+                                Grid.Row="3"
+                                Style="{StaticResource ToolButtonStyle}"
+                                Height="60"
+                                Width="Auto"
+                                Margin="10,5,10,15"
+                                Background="Green"
+                                Foreground="White"
+                                FontSize="22"
+                                FontWeight="Bold"/>
+
+                    </StackPanel>
+
+                </Grid>
 
             </Border>
 

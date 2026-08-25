@@ -187,12 +187,6 @@ namespace HSIApp
             Spectrum.AddSelectedSpectrum(selection);
 
             Viewer.AddSpectrumMarker(selection);
-
-            Debug.WriteLine(
-                $"Added {selection.Name} at ({selection.X}, {selection.Y})");
-
-            Debug.WriteLine(
-                $"Total selected spectra: {selectedSpectra.Count}");
         }
 
         private void SpectrumManager_SpectrumSelectionChanged(
@@ -338,14 +332,6 @@ namespace HSIApp
             SpectrumManager.AddSpectrum(selection);
             Spectrum.AddSelectedSpectrum(selection);
             Viewer.AddSpectrumMarker(selection);
-        }
-
-        private void SetActiveCube_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button { DataContext: LoadedCube cube })
-            {
-                project.ActiveCube = cube;
-            }
         }
 
         private void CubeInfo_Click(object sender, RoutedEventArgs e)

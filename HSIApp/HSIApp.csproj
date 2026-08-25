@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Media\Icons\AreaAverage.png" />
     <None Remove="Media\Icons\FitImage.png" />
+    <None Remove="Media\Icons\Info.png" />
     <None Remove="Media\Icons\MultipointSelection.png" />
     <None Remove="Media\Icons\PanHand.png" />
     <None Remove="Media\Icons\RectangleSelection.png" />
@@ -27,6 +28,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Media\Icons\FitImage.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Media\Icons\Info.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Media\Icons\MultipointSelection.png">
