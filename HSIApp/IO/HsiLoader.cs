@@ -1,5 +1,6 @@
 ﻿namespace HSIApp;
 
+using HSIApp.Models;
 using System.Globalization;
 using System.IO;
 
@@ -58,20 +59,43 @@ public static class HsiLoader
             Bands = int.Parse(header["bands"]),
             Interleave = header["interleave"],
             DataType = int.Parse(header["data type"]),
+            DataKind = DetermineDataKind(header),
             Wavelengths = wavelengths.ToArray(),
             Extra = header
         };
     }
 
+    private static CubeDataKind DetermineDataKind(
+        IReadOnlyDictionary<string, string> header)
+    {
+        if (!header.TryGetValue("description", out string? description))
+            return CubeDataKind.Unknown;
+
+        if (description.Contains(
+                "[REFLECTANCE]",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return CubeDataKind.Reflectance;
+        }
+
+        if (description.Contains(
+                "[RAW]",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return CubeDataKind.Raw;
+        }
+
+        return CubeDataKind.Unknown;
+    }
 
     public static HsiCube ReadCube(string rawPath, HsiMetadata metadata)
     {
+        ValidateSupportedCube(rawPath, metadata);
 
         using FileStream stream = File.OpenRead(rawPath);
         using BinaryReader reader = new(stream);
 
         // hard-code BIL
-        // hard-code data type = 12  (UInt16)
         // hard-code division by 10000
 
         int samples = metadata.Samples;
@@ -86,7 +110,7 @@ public static class HsiLoader
             {
                 for (int x = 0; x < samples; x++)
                 {
-                    cube[y, x, b] = reader.ReadUInt16() / 10000f;
+                    cube[y, x, b] = ReadPixelValue(reader, metadata.DataType);
                 }
             }
         }
@@ -98,6 +122,26 @@ public static class HsiLoader
 
     }
 
+    private static float ReadPixelValue(
+        BinaryReader reader,
+        int dataType)
+    {
+        const float scale = 10000f;
+
+        return dataType switch
+        {
+            // ENVI Type 2: signed 16-bit integer
+            2 => reader.ReadInt16() / scale,
+
+            // ENVI Type 12: unsigned 16-bit integer
+            12 => reader.ReadUInt16() / scale,
+
+            _ => throw new NotSupportedException(
+                $"Unsupported ENVI data type: {dataType}. " +
+                "Currently supported: 2 (Int16) and 12 (UInt16).")
+        };
+    }
+
     public static HsiCube Load(string rawPath)
     {
         HsiMetadata metadata = ReadHeader(rawPath);
@@ -107,5 +151,60 @@ public static class HsiLoader
         cube.Metadata = metadata;
 
         return cube;
+    }
+
+    private static void ValidateSupportedCube(
+        string rawPath,
+        HsiMetadata metadata)
+    {
+        if (!string.Equals(
+                metadata.Interleave,
+                "bil",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw new NotSupportedException(
+                $"Unsupported interleave '{metadata.Interleave}'. " +
+                "Currently only BIL cubes are supported.");
+        }
+
+        if (metadata.DataType is not (2 or 12))
+        {
+            throw new NotSupportedException(
+                $"Unsupported ENVI data type '{metadata.DataType}'. " +
+                "Currently supported: 2 (Int16) and 12 (UInt16).");
+        }
+
+        if (metadata.Extra.TryGetValue(
+                "byte order",
+                out string? byteOrder) &&
+                byteOrder.Trim() != "0")
+        {
+            throw new NotSupportedException(
+                "Big-endian cubes are not currently supported.");
+        }
+
+        if (metadata.Extra.TryGetValue(
+                "header offset",
+                out string? headerOffset) &&
+                headerOffset.Trim() != "0")
+        {
+            throw new NotSupportedException(
+                "Cubes with a header offset are not currently supported.");
+        }
+
+        long expectedBytes = checked(
+            (long)metadata.Lines *
+            metadata.Samples *
+            metadata.Bands *
+            sizeof(ushort));
+
+        long actualBytes = new FileInfo(rawPath).Length;
+
+        if (actualBytes != expectedBytes)
+        {
+            throw new InvalidDataException(
+                $"Cube file size does not match its header. " +
+                $"Expected {expectedBytes:N0} bytes, found {actualBytes:N0} bytes.");
+        }
     }
 }

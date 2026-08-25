@@ -1,4 +1,6 @@
-﻿namespace HSIApp;
+﻿using HSIApp.Models;
+
+namespace HSIApp;
 
 public class HsiMetadata
 {
@@ -11,6 +13,8 @@ public class HsiMetadata
     public string Interleave { get; init; } = null!;
 
     public int DataType { get; init; }
+
+    public CubeDataKind DataKind { get; init; } = CubeDataKind.Unknown;
 
     public double[] Wavelengths { get; init; } = null!;
 
