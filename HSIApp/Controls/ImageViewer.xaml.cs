@@ -99,17 +99,71 @@ namespace HSIApp.Controls
         public void LoadCube(HsiCube cube)
         {
             ClearSpectrumMarkers();
+
+            double? previousWavelength = null;
+
+            if (currentCube != null &&
+                currentCube.Metadata.Wavelengths.Length > 0)
+            {
+                int currentBand = Math.Clamp(
+                    (int)BandSlider.Value,
+                    0,
+                    currentCube.Metadata.Wavelengths.Length - 1);
+
+                previousWavelength =
+                    currentCube.Metadata.Wavelengths[currentBand];
+            }
             
             currentCube = cube;
 
             BandSlider.Minimum = 0;
             BandSlider.Maximum = cube.Bands - 1;
-            BandSlider.Value = 0;
 
-            DisplayBand(0);
+            int bandIndex = previousWavelength.HasValue
+                ? FindClosestBandIndex(
+                    cube.Metadata.Wavelengths,
+                    previousWavelength.Value)
+                : 0;
 
-            Debug.WriteLine(
-                $"Cube: {cube.Width} x {cube.Height} x {cube.Bands}");
+            BandSlider.Value = bandIndex;
+            DisplayBand(bandIndex);
+
+            BandLabel.Text =
+                $"{cube.Metadata.Wavelengths[bandIndex]:F1} nm";
+
+            Dispatcher.BeginInvoke(
+                System.Windows.Threading.DispatcherPriority.Loaded,
+                new Action(() =>
+                {
+                    // Avoid fitting an old cube if the active cube changed meanwhile.
+                    if (ReferenceEquals(currentCube, cube))
+                    {
+                        FitImage();
+                    }
+                }));
+        }
+
+        private static int FindClosestBandIndex(
+            double[] wavelengths,
+            double targetWavelength)
+        {
+            int closestIndex = 0;
+            double smallestDifference =
+                Math.Abs(wavelengths[0] - targetWavelength);
+
+            for (int index = 1; index < wavelengths.Length; index++)
+            {
+                double difference =
+                    Math.Abs(wavelengths[index] - targetWavelength);
+
+                if (difference < smallestDifference)
+                {
+                    smallestDifference = difference;
+                    closestIndex = index;
+                }
+            }
+
+            return closestIndex;
         }
 
         public void AddSpectrumMarker(SpectrumSelection selection)
@@ -323,6 +377,15 @@ namespace HSIApp.Controls
             {
                 PixelHovered?.Invoke(x, y);
             }
+            else
+            {
+                PixelHoverEnded?.Invoke();
+            }
+        }
+
+        private void ImageViewport_MouseLeave(object sender, MouseEventArgs e)
+        {
+            PixelHoverEnded?.Invoke();
         }
 
         private void ImageViewport_MouseWheel(object sender, MouseWheelEventArgs e)

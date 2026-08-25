@@ -28,7 +28,8 @@
                 MouseLeftButtonDown="ImageViewport_MouseLeftButtonDown"
                 MouseWheel="ImageViewport_MouseWheel"
                 MouseDown="ImageViewport_MouseDown"
-                MouseUp="ImageViewport_MouseUp">
+                MouseUp="ImageViewport_MouseUp"
+                MouseLeave="ImageViewport_MouseLeave">
 
             <Grid>
 
