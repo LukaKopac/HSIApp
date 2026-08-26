@@ -1,23 +1,42 @@
 using HSIApp;
 using HSIApp.IO;
 using HSIApp.Models;
+using HSIApp.Prediction;
 
 return args.Length == 0
     ? PrintUsage()
-    : RunCommand(args);
+    : await RunCommandAsync(args);
 
-static int RunCommand(string[] args)
+static async Task<int> RunCommandAsync(string[] args)
 {
     try
     {
-        return args[0].ToLowerInvariant() switch
+        string command = args[0].ToLowerInvariant();
+
+        if (command == "predict")
+        {
+            if (args.Length != 5)
+            {
+                return PrintUsage(
+                    "The predict command requires four arguments.");
+            }
+
+            return await RunPredictionAsync(
+                args[1],
+                args[2],
+                args[3],
+                args[4]);
+        }
+
+        return command switch
         {
             "inspect-cube" when args.Length == 2 => InspectCube(args[1]),
             "inspect-model" when args.Length == 2 => InspectModel(args[1]),
             "validate-model" when args.Length == 3 =>
                 ValidateModel(args[1], args[2]),
             "help" or "--help" or "-h" => PrintUsage(),
-            _ => PrintUsage("Unknown command or incorrect number of arguments.")
+            _ => PrintUsage(
+                "Unknown command or incorrect number of arguments.")
         };
     }
     catch (Exception exception)
@@ -77,6 +96,32 @@ static int ValidateModel(string rawPath, string packageFolderPath)
     return 2;
 }
 
+static async Task<int> RunPredictionAsync(
+    string pythonExecutablePath,
+    string rawPath,
+    string modelPackagePath,
+    string outputDirectory)
+{
+    SharedPythonModelPredictor predictor =
+        new(pythonExecutablePath);
+
+    PredictionResult result = await predictor.PredictAsync(
+        new PredictionRequest(
+            rawPath,
+            modelPackagePath,
+            outputDirectory));
+
+    Console.WriteLine("Prediction completed.");
+    Console.WriteLine($"Output: {result.PredictionPath}");
+
+    if (!string.IsNullOrWhiteSpace(result.StandardOutput))
+    {
+        Console.WriteLine(result.StandardOutput.Trim());
+    }
+
+    return 0;
+}
+
 static int PrintUsage(string? error = null)
 {
     if (error is not null)
@@ -91,5 +136,7 @@ static int PrintUsage(string? error = null)
     Console.WriteLine("  inspect-cube <cube.raw>");
     Console.WriteLine("  inspect-model <model-package-folder>");
     Console.WriteLine("  validate-model <cube.raw> <model-package-folder>");
+    Console.WriteLine(
+        "  predict <python.exe> <cube.raw> <model-package-folder> <output-folder>");
     return error is null ? 0 : 1;
 }
