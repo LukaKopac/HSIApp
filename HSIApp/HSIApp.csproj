@@ -50,4 +50,10 @@
     </Resource>
   </ItemGroup>
 
+	<ItemGroup>
+		<None Update="PythonBridge\predict.py">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>

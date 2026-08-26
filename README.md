@@ -46,4 +46,11 @@ HSIApp/
 
 ## Development Notes
 
-The HSIPlayground project contains experimental code used during development and may not always represent the current application state.
+`HSIPlayground` is a command-line harness for exercising shared HSI and
+model-package functionality without starting the WPF application:
+
+```powershell
+dotnet run --project HSIPlayground -- inspect-cube <cube.raw>
+dotnet run --project HSIPlayground -- inspect-model <model-package-folder>
+dotnet run --project HSIPlayground -- validate-model <cube.raw> <model-package-folder>
+```
