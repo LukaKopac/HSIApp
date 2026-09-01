@@ -210,6 +210,58 @@ namespace HSIApp
         private void SpectrumManager_SaveSpectraRequested(
             IList<SpectrumSelection> selections)
         {
+            if (selections == null || selections.Count == 0)
+                return;
+
+            // Validate that all spectra use the same wavelength axis
+            var referenceWavelengths = selections[0].Wavelengths;
+
+            for (int s = 0; s < selections.Count; s++)
+            {
+                var selection = selections[s];
+
+                if (selection.Wavelengths.Length != selection.Spectrum.Length)
+                {
+                    MessageBox.Show(
+                        $"Spectrum \"{selection.Name}\" has a different number " +
+                        "of wavelengths and reflectance values.",
+                        "Cannot Save Spectra",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+
+                    return;
+                }
+
+                if (selection.Wavelengths.Length != referenceWavelengths.Length)
+                {
+                    MessageBox.Show(
+                        $"Spectrum \"{selection.Name}\" has a different number " +
+                        "of wavelengths than the other spectra.",
+                        "Cannot Save Spectra",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+
+                    return;
+                }
+
+                for (int i = 0;  i < referenceWavelengths.Length; i++)
+                {
+                    if (Math.Abs(
+                        selection.Wavelengths[i] - referenceWavelengths[i])
+                        > 1e-6)
+                    {
+                        MessageBox.Show(
+                            $"Spectrum \"{selection.Name}\" does not use the " +
+                            "same wavelength axis as the other spectra.",
+                            "Cannot Save Spectra",
+                            MessageBoxButton.OK,
+                            MessageBoxImage.Warning);
+
+                        return;
+                    }
+                }
+            }
+
             var dialog = new SaveFileDialog
             {
                 Title = "Save spectra",
@@ -225,24 +277,33 @@ namespace HSIApp
             {
                 using var writer = new StreamWriter(dialog.FileName);
 
-                writer.WriteLine(
-                    "SpectrumName,X,Y,WavelengthNm,Reflectance");
+                // Header
+                writer.Write("Wavelength");
 
                 foreach (var selection in selections)
                 {
-                    int pointCount = Math.Min(
-                        selection.Wavelengths.Length,
-                        selection.Spectrum.Length);
+                    writer.Write(",");
+                    writer.Write(CsvEscape(selection.Name));
+                }
 
-                    for (int i = 0; i < pointCount; i++)
+                writer.WriteLine();
+
+                // Data
+                for (int i = 0; i < referenceWavelengths.Length; i++)
+                {
+                    writer.Write(
+                        referenceWavelengths[i]
+                            .ToString(CultureInfo.InvariantCulture));
+
+                    foreach (var selection in selections)
                     {
-                        writer.WriteLine(string.Join(",",
-                            CsvEscape(selection.Name),
-                            selection.X.ToString(CultureInfo.InvariantCulture),
-                            selection.Y.ToString(CultureInfo.InvariantCulture),
-                            selection.Wavelengths[i].ToString(CultureInfo.InvariantCulture),
-                            selection.Spectrum[i].ToString(CultureInfo.InvariantCulture)));
+                        writer.Write(",");
+                        writer.Write(
+                            selection.Spectrum[i]
+                                .ToString(CultureInfo.InvariantCulture));
                     }
+
+                    writer.WriteLine();
                 }
             }
             catch (Exception ex)
